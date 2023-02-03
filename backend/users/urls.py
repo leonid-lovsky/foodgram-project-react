@@ -4,5 +4,5 @@ from . import views
 
 urlpatterns = [
     path('users/', include('djoser.urls')),
-    path('users/', include('djoser.urls.authtoken'))
+    path('auth/', include('djoser.urls.authtoken'))
 ]

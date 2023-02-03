@@ -26,9 +26,7 @@ SECRET_KEY = 'django-insecure-@sqk$b&6+$w67#iaa$8a+76zf=z=xc---739#d54ws5=q=a&t=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    'backend', # TODO
-]
+ALLOWED_HOSTS = ['*']  # TODO
 
 
 # Application definition
@@ -155,11 +153,22 @@ REST_FRAMEWORK = {
 }
 
 DJOSER = {
+    'SERIALIZERS': {
+        # 'user_create': 'djoser.serializers.UserCreateSerializer',
+    },
     'PERMISSIONS': {
-        'user_create': ['rest_framework.permissions.AllowAny'],
-    }
+        # 'user_create': ['rest_framework.permissions.AllowAny'],
+    },
+    'HIDE_USERS': False,
 }
 
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:8080',
+CORS_ALLOW_ALL_ORIGINS = True  # TODO
+# CORS_URLS_REGEX = r"^/api/.*$"
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
 ]
