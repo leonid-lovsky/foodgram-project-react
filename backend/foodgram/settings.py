@@ -26,8 +26,9 @@ SECRET_KEY = 'django-insecure-@sqk$b&6+$w67#iaa$8a+76zf=z=xc---739#d54ws5=q=a&t=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ['*']  # TODO
+ALLOWED_HOSTS = [
+    'backend', # TODO
+]
 
 
 # Application definition
@@ -42,12 +43,14 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'rest_framework',
     'rest_framework.authtoken',
-    'djoser'
+    'djoser',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -140,15 +143,23 @@ AUTH_USER_MODEL = 'users.User'
 
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
+    'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
-    ),
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',  # TODO
+    ],
+    # 'DEFAULT_FILTER_BACKENDS': [
+    # 'django_filters.rest_framework.DjangoFilterBackend'
+    # ],
 }
 
-# DJOSER = {
-#     'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',
-#     'USERNAME_RESET_CONFIRM_URL': '#/username/reset/confirm/{uid}/{token}',
-#     'ACTIVATION_URL': '#/activate/{uid}/{token}',
-#     'SEND_ACTIVATION_EMAIL': True,
-#     'SERIALIZERS': {},
-# }
+DJOSER = {
+    'PERMISSIONS': {
+        'user_create': ['rest_framework.permissions.AllowAny'],
+    }
+}
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:8080',
+]
