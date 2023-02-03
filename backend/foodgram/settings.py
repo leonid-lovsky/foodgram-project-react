@@ -144,9 +144,6 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',  # TODO
-    ],
     # 'DEFAULT_FILTER_BACKENDS': [
     # 'django_filters.rest_framework.DjangoFilterBackend'
     # ],
@@ -162,13 +159,5 @@ DJOSER = {
     'HIDE_USERS': False,
 }
 
-CORS_ALLOW_ALL_ORIGINS = True  # TODO
+# CORS_ALLOW_ALL_ORIGINS = True  # TODO
 # CORS_URLS_REGEX = r"^/api/.*$"
-CORS_ALLOW_METHODS = [
-    "DELETE",
-    "GET",
-    "OPTIONS",
-    "PATCH",
-    "POST",
-    "PUT",
-]
