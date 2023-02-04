@@ -169,3 +169,4 @@ DJOSER = {
 # CORS_URLS_REGEX = r"^/api/.*$" # TODO
 
 # TODO: django rest framework browsable api authorization
+# TODO: http://localhost + http://localhost:8000
