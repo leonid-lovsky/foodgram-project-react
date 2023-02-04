@@ -147,6 +147,8 @@ REST_FRAMEWORK = {
     # 'DEFAULT_FILTER_BACKENDS': [
     # 'django_filters.rest_framework.DjangoFilterBackend'
     # ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 100
 }
 
 DJOSER = {
@@ -154,7 +156,7 @@ DJOSER = {
         # 'user_create': 'djoser.serializers.UserCreateSerializer',
     },
     'PERMISSIONS': {
-        # 'user_create': ['rest_framework.permissions.AllowAny'],
+        'user_list': ['rest_framework.permissions.AllowAny'],
     },
     'HIDE_USERS': False,
 }
