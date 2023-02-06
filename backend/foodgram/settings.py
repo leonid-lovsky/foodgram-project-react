@@ -169,9 +169,4 @@ DJOSER = {
 # TODO: Relationships and hyperlinked APIs
 # TODO: http://localhost + http://localhost:8000
 
-# SWAGGER_SETTINGS = {
-# 'LOGIN_URL': 'rest_framework:login',
-# 'LOGOUT_URL': 'rest_framework:logout'
-# }
-
 LOGIN_REDIRECT_URL = None
