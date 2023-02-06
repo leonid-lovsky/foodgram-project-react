@@ -142,7 +142,7 @@ AUTH_USER_MODEL = 'users.User'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication',  # TODO
+        # 'rest_framework.authentication.SessionAuthentication',  # TODO
     ],
     # 'DEFAULT_FILTER_BACKENDS': [
     # 'django_filters.rest_framework.DjangoFilterBackend' # TODO
@@ -166,7 +166,9 @@ DJOSER = {
 # CORS_ALLOW_ALL_ORIGINS = True  # TODO
 # CORS_URLS_REGEX = r"^/api/.*$" # TODO
 
-# TODO: Relationships and hyperlinked APIs
+# TODO: Could not resolve URL for hyperlinked relationship using view name
 # TODO: http://localhost + http://localhost:8000
 
 # LOGIN_REDIRECT_URL = '/accounts/profile/'
+
+# TODO: This router is similar to SimpleRouter as above, but additionally includes a default API root view, that returns a response containing hyperlinks to all the list views
