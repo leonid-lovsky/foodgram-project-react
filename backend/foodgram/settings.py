@@ -9,8 +9,6 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-import os
-
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -126,10 +124,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = BASE_DIR / 'static'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = BASE_DIR / 'media'
 
 
 # Default primary key field type
@@ -144,7 +142,7 @@ AUTH_USER_MODEL = 'users.User'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
-        # 'rest_framework.authentication.SessionAuthentication', # TODO
+        'rest_framework.authentication.SessionAuthentication',  # TODO
     ],
     # 'DEFAULT_FILTER_BACKENDS': [
     # 'django_filters.rest_framework.DjangoFilterBackend' # TODO
@@ -168,5 +166,12 @@ DJOSER = {
 # CORS_ALLOW_ALL_ORIGINS = True  # TODO
 # CORS_URLS_REGEX = r"^/api/.*$" # TODO
 
-# TODO: django rest framework browsable api authorization
+# TODO: Relationships and hyperlinked APIs
 # TODO: http://localhost + http://localhost:8000
+
+# SWAGGER_SETTINGS = {
+# 'LOGIN_URL': 'rest_framework:login',
+# 'LOGOUT_URL': 'rest_framework:logout'
+# }
+
+LOGIN_REDIRECT_URL = None
