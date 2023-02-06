@@ -166,9 +166,8 @@ DJOSER = {
 # CORS_ALLOW_ALL_ORIGINS = True  # TODO
 # CORS_URLS_REGEX = r"^/api/.*$" # TODO
 
-# TODO: Could not resolve URL for hyperlinked relationship using view name
-# TODO: http://localhost + http://localhost:8000
-
 # LOGIN_REDIRECT_URL = '/accounts/profile/'
 
+# TODO: Could not resolve URL for hyperlinked relationship using view name
 # TODO: This router is similar to SimpleRouter as above, but additionally includes a default API root view, that returns a response containing hyperlinks to all the list views
+# TODO: http://localhost + http://localhost:8000
