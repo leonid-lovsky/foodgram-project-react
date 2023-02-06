@@ -5,12 +5,15 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 urlpatterns = [
-    path('api/', include('users.urls')),
     path('admin/', admin.site.urls),
 ]
 
+urlpatterns = [
+    path('api/', include('users.urls')),  # TODO
+]
+
 urlpatterns += [
-    path('accounts/', include('rest_framework.urls')), # TODO
+    path('auth/', include('rest_framework.urls')),  # TODO
 ]
 
 # TODO

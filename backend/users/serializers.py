@@ -13,7 +13,7 @@ class CustomUserCreateSerializer(UserCreateSerializer):
         model = User
         fields = [
             'email', 'id', 'username', 'first_name', 'last_name',
-            'password'
+            'password',
         ]
         extra_kwargs = {
             'email': {
@@ -36,12 +36,15 @@ class CustomUserCreateSerializer(UserCreateSerializer):
 
 class CustomUserSerializer(UserSerializer):
     is_subscribed = SerializerMethodField()
+    
+    details = HyperlinkedIdentityField(view_name='user-detail')
 
     class Meta(UserSerializer.Meta):
         model = User
         fields = [
             'email', 'id', 'username', 'first_name', 'last_name',
             'is_subscribed',
+            'details',
         ]
 
     def get_is_subscribed(self, obj):

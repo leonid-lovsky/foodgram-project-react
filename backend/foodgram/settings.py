@@ -169,4 +169,4 @@ DJOSER = {
 # TODO: Relationships and hyperlinked APIs
 # TODO: http://localhost + http://localhost:8000
 
-LOGIN_REDIRECT_URL = None
+# LOGIN_REDIRECT_URL = '/accounts/profile/'
