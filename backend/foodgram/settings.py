@@ -19,13 +19,13 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
-    # 'corsheaders', # TODO
+    'corsheaders', # TODO
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    # 'corsheaders.middleware.CorsMiddleware', # TODO
+    'corsheaders.middleware.CorsMiddleware', # TODO
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -120,7 +120,7 @@ DJOSER = {
     'HIDE_USERS': False,
 }
 
-# CORS_ALLOW_ALL_ORIGINS = True  # TODO
+CORS_ALLOW_ALL_ORIGINS = True  # TODO
 # CORS_URLS_REGEX = r"^/api/.*$" # TODO
 # CORS_ORIGIN_WHITELIST = [
 #     'http://localhost:8080', # TODO
