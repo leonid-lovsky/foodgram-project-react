@@ -121,7 +121,10 @@ DJOSER = {
 }
 
 CORS_ALLOW_ALL_ORIGINS = True  # TODO
-CORS_URLS_REGEX = r"^/api/.*$" # TODO
+CORS_URLS_REGEX = r'^/api/.*$' # TODO
+# CORS_ORIGIN_WHITELIST = [
+#     'http://localhost:8080', # TODO
+# ]
 
 # LOGIN_REDIRECT_URL = '/accounts/profile/' # TODO
 
