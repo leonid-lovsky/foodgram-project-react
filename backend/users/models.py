@@ -7,6 +7,18 @@ from django.utils.translation import gettext_lazy as _
 class User(AbstractUser):
     username_validator = ASCIIUsernameValidator()
 
+    username = models.CharField(
+        _('username'),
+        max_length=150,
+        unique=True,
+        help_text=_(
+            'Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.'),
+        validators=[username_validator],
+        error_messages={
+            'unique': _("A user with that username already exists."),
+        },
+        blank=False,
+    )
     first_name = models.CharField(
         _('first name'),
         max_length=150,
@@ -25,7 +37,7 @@ class User(AbstractUser):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = [
-        # 'username',
-        # 'first_name',
-        # 'last_name',
+        'username',
+        'first_name',
+        'last_name',
     ]
