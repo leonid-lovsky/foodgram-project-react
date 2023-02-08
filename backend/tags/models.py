@@ -12,15 +12,22 @@ COLOR_VALIDATOR = RegexValidator(
 class Tag(models.Model):
     name = models.CharField(
         _('название'),
-        max_length=50
+        max_length=50,
+        blank=False,
+        unique=True,
     )
     color = models.CharField(
         _('цвет'),
         max_length=50,
+        validators=[
+            COLOR_VALIDATOR,
+        ],
+        blank=False,
         unique=True,
     )
     slug = models.SlugField(
         _('slug'),
         max_length=50,
+        blank=False,
         unique=True,
     )

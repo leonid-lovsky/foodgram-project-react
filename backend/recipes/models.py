@@ -14,27 +14,33 @@ class Recipe(models.Model):
     name = models.CharField(
         _('название'),
         max_length=150,
+        blank=False,
     )
     image = models.ImageField(
         _('картинка'),
         upload_to='recipes',
+        blank=False,
     )
     text = models.TextField(
         _('описание'),
+        blank=False
     )
     ingredients = models.ManyToManyField(
         Ingredient,
-        through='RecipeIngredient'
+        through='RecipeIngredient',
+        blank=False,
     )
     tags = models.ManyToManyField(
         Tag,
         through='RecipeTag',
+        blank=False,
     )
     cooking_time = models.IntegerField(
         _('время приготовления'),
         validators=[
             MinValueValidator(1),
         ],
+        blank=False,
     )
 
 
@@ -52,6 +58,7 @@ class RecipeIngredient(models.Model):
         validators=[
             MinValueValidator(1),
         ],
+        blank=False,
     )
 
 
