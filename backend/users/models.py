@@ -15,7 +15,8 @@ class User(AbstractUser):
     last_name = models.CharField(
         _('last name'),
         max_length=150,
-        blank=False)
+        blank=False
+    )
     email = models.EmailField(
         _('email address'),
         blank=False,
@@ -26,5 +27,5 @@ class User(AbstractUser):
     REQUIRED_FIELDS = [
         'username',
         'first_name',
-        'last_name'
+        'last_name',
     ]
