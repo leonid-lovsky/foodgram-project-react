@@ -1,17 +1,15 @@
-from django.shortcuts import render
-from rest_framework import viewsets
-from rest_framework import permissions
-from serializers import RecipeSerializer
-
-from models import Recipe
 from common.permissions import IsOwnerOrReadOnly
+from django.shortcuts import render
+from rest_framework import permissions, viewsets
+
+from .models import Recipe
+from .serializers import RecipeSerializer
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     permission_classes = [
-        permissions.IsAuthenticatedOrReadOnly,
         IsOwnerOrReadOnly,
     ]
 
