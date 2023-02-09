@@ -25,13 +25,13 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
-    'corsheaders', # TODO
+    'corsheaders',  # TODO
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware', # TODO
+    'corsheaders.middleware.CorsMiddleware',  # TODO
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -111,7 +111,10 @@ REST_FRAMEWORK = {
     # 'django_filters.rest_framework.DjangoFilterBackend' # TODO
     # ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 100
+    'PAGE_SIZE': 100,
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
 }
 
 DJOSER = {
@@ -127,7 +130,7 @@ DJOSER = {
 }
 
 CORS_ALLOW_ALL_ORIGINS = True  # TODO
-CORS_URLS_REGEX = r'^/api/.*$' # TODO
+CORS_URLS_REGEX = r'^/api/.*$'  # TODO
 # CORS_ORIGIN_WHITELIST = [
 #     'http://localhost:8080', # TODO
 # ]

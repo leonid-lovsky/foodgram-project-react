@@ -9,9 +9,9 @@ urlpatterns = [
     path('api/', include('users.urls')),  # TODO
 ]
 
-# urlpatterns += [
-    # path('auth/', include('rest_framework.urls', namespace='auth')),  # TODO
-# ]
+urlpatterns += [
+    path('api-auth/', include('rest_framework.urls')),  # TODO
+]
 
 # TODO
 # if settings.DEBUG:
