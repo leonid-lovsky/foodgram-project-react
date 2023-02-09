@@ -3,17 +3,19 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
+from rest_framework import routers
+from recipes.views import RecipeViewSet
+
+router = routers.DefaultRouter()
+router.register(r'recipes', RecipeViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('users.urls')),  # TODO
+    path('api/', include(router.urls)),
+    path('api/', include('users.urls')),
+    path('api-auth/', include('rest_framework.urls')),
 ]
 
-urlpatterns += [
-    path('api-auth/', include('rest_framework.urls')),  # TODO
-]
-
-# TODO
 # if settings.DEBUG:
 #     urlpatterns += static(
 #         settings.STATIC_URL,
