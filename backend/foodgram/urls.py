@@ -1,12 +1,13 @@
 from django.contrib import admin
 from django.urls import include, path
-from djoser.views import UserViewSet
+# from djoser.views import UserViewSet
 from recipes.views import RecipeViewSet
 from rest_framework import routers
 from tags.views import TagViewSet
+from users.views import CustomUserViewSet
 
 router = routers.DefaultRouter()
-router.register(r'users', UserViewSet)
+router.register(r'users', CustomUserViewSet)
 router.register(r'tags', TagViewSet)
 router.register(r'recipes', RecipeViewSet)
 

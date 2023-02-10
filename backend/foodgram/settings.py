@@ -118,8 +118,8 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend',
     ],
-    'DEFAULT_PAGINATION_CLASS': 'common.pagination.PageLimitPagination',
-    'PAGE_SIZE': 6,
+    # 'DEFAULT_PAGINATION_CLASS': 'common.pagination.PageLimitPagination',
+    # 'PAGE_SIZE': 6,
 }
 
 DJOSER = {
