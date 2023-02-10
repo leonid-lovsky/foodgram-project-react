@@ -22,16 +22,18 @@ INSTALLED_APPS = [
     'favorites.apps.FavoritesConfig',
     'subscriptions.apps.SubscriptionsConfig',
     'ingredients.apps.IngredientsConfig',
+    # 'auth.apps.AuthConfig',
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
-    'corsheaders',  # TODO
+    'corsheaders',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',  # TODO
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -41,6 +43,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'foodgram.urls'
 
+# TODO
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -110,11 +113,11 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ],
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 100,
-    # 'DEFAULT_FILTER_BACKENDS': [
-    # 'django_filters.rest_framework.DjangoFilterBackend' # TODO
-    # ],
 }
 
 DJOSER = {
@@ -129,15 +132,7 @@ DJOSER = {
     'HIDE_USERS': False,
 }
 
-CORS_ALLOW_ALL_ORIGINS = True  # TODO
-CORS_URLS_REGEX = r'^/api/.*$'  # TODO
-# CORS_ORIGIN_WHITELIST = [
-#     'http://localhost:8080', # TODO
-# ]
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_URLS_REGEX = r'^/api/.*$'
 
-# LOGIN_REDIRECT_URL = '/accounts/profile/' # TODO
-
-# TODO
-# Could not resolve URL for hyperlinked relationship using view name
-# This router is similar to SimpleRouter as above, but additionally includes a default API root view, that returns a response containing hyperlinks to all the list views
-# http://localhost:8000 + http://localhost:8080
+LOGIN_REDIRECT_URL = '/accounts/profile/'
