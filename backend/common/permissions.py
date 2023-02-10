@@ -1,7 +1,7 @@
 from rest_framework import permissions
 
 
-class IsOwnerOrReadOnly(permissions.BasePermission):
+class IsAuthorOrReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
         return bool(
             request.method in permissions.SAFE_METHODS or
@@ -13,4 +13,4 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return True
 
-        return obj.owner == request.user
+        return obj.author == request.user

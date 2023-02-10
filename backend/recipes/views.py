@@ -1,4 +1,4 @@
-from common.permissions import IsOwnerOrReadOnly
+from common.permissions import IsAuthorOrReadOnly
 from django.shortcuts import render
 from rest_framework import permissions, viewsets
 
@@ -10,7 +10,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     permission_classes = [
-        IsOwnerOrReadOnly,
+        IsAuthorOrReadOnly,
     ]
 
     def perform_create(self, serializer):
