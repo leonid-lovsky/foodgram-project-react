@@ -1,24 +1,24 @@
 from django.conf import settings
-from django.db import models
+from django.db.models import CASCADE, ForeignKey, Model, UniqueConstraint
 from django.forms import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 
-class Subscription(models.Model):
-    subscriber = models.ForeignKey(
+class Subscription(Model):
+    subscriber = ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
+        on_delete=CASCADE,
         related_name='subscribing',
     )
-    subscribing = models.ForeignKey(
+    subscribing = ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
+        on_delete=CASCADE,
         related_name='subscribers',
     )
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(
+            UniqueConstraint(
                 fields=['subscriber', 'subscribing'],
                 name='unique subscription'
             ),

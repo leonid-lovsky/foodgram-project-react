@@ -1,6 +1,5 @@
-from django.db import models
 from django.core.validators import RegexValidator
-
+from django.db.models import CharField, Model, SlugField
 from django.utils.translation import gettext_lazy as _
 
 COLOR_VALIDATOR = RegexValidator(
@@ -9,25 +8,25 @@ COLOR_VALIDATOR = RegexValidator(
 )
 
 
-class Tag(models.Model):
-    name = models.CharField(
+class Tag(Model):
+    name = CharField(
         _('название'),
-        max_length=50,
+        max_length=200,
         unique=True,
         blank=False,
     )
-    color = models.CharField(
+    color = CharField(
         _('цвет'),
-        max_length=50,
+        max_length=7,
         validators=[
             COLOR_VALIDATOR,
         ],
         unique=True,
         blank=False,
     )
-    slug = models.SlugField(
+    slug = SlugField(
         _('slug'),
-        max_length=50,
+        max_length=200,
         unique=True,
         blank=False,
     )

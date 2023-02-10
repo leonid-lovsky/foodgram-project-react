@@ -1,39 +1,41 @@
 from django.conf import settings
 from django.core.validators import MinValueValidator
-from django.db import models
+from django.db.models import (CASCADE, RESTRICT, CharField, ForeignKey,
+                              ImageField, IntegerField, ManyToManyField, Model,
+                              TextField)
 from django.utils.translation import gettext_lazy as _
 from ingredients.models import Ingredient
 from tags.models import Tag
 
 
-class Recipe(models.Model):
-    author = models.ForeignKey(
+class Recipe(Model):
+    author = ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
+        on_delete=CASCADE,
         related_name='recipes',
     )
-    name = models.CharField(
+    name = CharField(
         _('название'),
         max_length=200,
     )
-    image = models.ImageField(
+    image = ImageField(
         _('картинка'),
         upload_to='recipes',
     )
-    text = models.TextField(
+    text = TextField(
         _('описание'),
     )
-    ingredients = models.ManyToManyField(
+    ingredients = ManyToManyField(
         Ingredient,
         related_name='recipes',
         through='RecipeIngredient',
     )
-    tags = models.ManyToManyField(
+    tags = ManyToManyField(
         Tag,
         related_name='recipes',
         through='RecipeTag',
     )
-    cooking_time = models.IntegerField(
+    cooking_time = IntegerField(
         _('время приготовления'),
         validators=[
             MinValueValidator(1),
@@ -41,16 +43,16 @@ class Recipe(models.Model):
     )
 
 
-class RecipeIngredient(models.Model):
-    recipe = models.ForeignKey(
+class RecipeIngredient(Model):
+    recipe = ForeignKey(
         Recipe,
-        on_delete=models.CASCADE,
+        on_delete=CASCADE,
     )
-    ingredient = models.ForeignKey(
+    ingredient = ForeignKey(
         Ingredient,
-        on_delete=models.RESTRICT,
+        on_delete=RESTRICT,
     )
-    amount = models.IntegerField(
+    amount = IntegerField(
         _('количество'),
         validators=[
             MinValueValidator(1),
@@ -58,12 +60,12 @@ class RecipeIngredient(models.Model):
     )
 
 
-class RecipeTag(models.Model):
-    recipe = models.ForeignKey(
+class RecipeTag(Model):
+    recipe = ForeignKey(
         Recipe,
-        on_delete=models.CASCADE,
+        on_delete=CASCADE,
     )
-    tag = models.ForeignKey(
+    tag = ForeignKey(
         Tag,
-        on_delete=models.RESTRICT,
+        on_delete=RESTRICT,
     )
