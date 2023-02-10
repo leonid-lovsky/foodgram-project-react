@@ -3,6 +3,8 @@ from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework.serializers import (HyperlinkedIdentityField,
                                         SerializerMethodField)
 
+from subscriptions.models import Subscription
+
 # from .models import Subscription
 
 User = get_user_model()
@@ -23,15 +25,15 @@ class CustomUserSerializer(UserSerializer):
         ]
 
     def get_is_subscribed(self, obj):
-        return False  # TODO
-        # user = self.context.get('request').user
-        # if user.is_anonymous:
-        # return False
-        # return Subscription.objects.filter(user=user, author=obj).exists()
+        user = self.context.get('user')
+        return Subscription.objects.filter(
+            subscriber=user,
+            subscribing=obj,
+        ).exists()
 
 
 class CustomUserCreateSerializer(UserCreateSerializer):
-    class Meta(UserCreateSerializer.Meta):
+    class Meta:
         model = User
         fields = [
             'email',
