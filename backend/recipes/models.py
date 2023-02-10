@@ -1,8 +1,10 @@
 from django.conf import settings
 from django.core.validators import MinValueValidator
-from django.db.models import (CASCADE, RESTRICT, CharField, ForeignKey,
-                              ImageField, IntegerField, ManyToManyField, Model,
-                              TextField)
+from django.db.models import (
+    CASCADE, RESTRICT, CharField, ForeignKey,
+    ImageField, IntegerField, ManyToManyField, Model,
+    TextField
+)
 from django.utils.translation import gettext_lazy as _
 from ingredients.models import Ingredient
 from tags.models import Tag
