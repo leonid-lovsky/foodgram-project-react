@@ -5,12 +5,12 @@ from django.utils.translation import gettext_lazy as _
 class Ingredient(Model):
     name = CharField(
         _('название'),
-        max_length=150,
+        max_length=200,
         blank=False,
     )
     measurement_unit = CharField(
         _('единицы измерения'),
-        max_length=25,
+        max_length=200,
         blank=False,
     )
 
