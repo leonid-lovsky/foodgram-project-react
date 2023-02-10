@@ -34,6 +34,7 @@ class CustomUserCreateSerializer(UserCreateSerializer):
         model = User
         fields = [
             'email',
+            'id',
             'username',
             'first_name',
             'last_name',
