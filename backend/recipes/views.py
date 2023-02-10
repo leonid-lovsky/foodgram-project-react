@@ -1,7 +1,7 @@
 from common.pagination import PageLimitPagination
 from common.permissions import IsAuthorOrReadOnly
 from rest_framework.viewsets import ModelViewSet
-
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from .models import Recipe
 from .serializers import RecipeSerializer
 
