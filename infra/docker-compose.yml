@@ -30,9 +30,9 @@ services:
     volumes:
       - ../frontend/:/app/result_build/
 
+  # TODO
   nginx:
     image: nginx:1.19.3
-    # TODO
     ports:
       - "80:80"
     volumes:
