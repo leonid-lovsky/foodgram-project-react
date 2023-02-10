@@ -14,10 +14,8 @@ router.register('recipes', RecipeViewSet)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
-    path('api/auth/token/login/', TokenCreateView.as_view(), name='login'),
-    path('api/auth/token/logout/', TokenDestroyView.as_view(), name='logout'),
-    path('api/auth/session/login/', LoginView.as_view(template_name='rest_framework/login.html'), name='login'),
-    path('api/auth/session/logout/', LogoutView.as_view(), name='logout'),
+    path('api/auth/', include('djoser.urls.authtoken')),
+    path('auth/', include('rest_framework.urls'))
 ]
 
 # if settings.DEBUG:
