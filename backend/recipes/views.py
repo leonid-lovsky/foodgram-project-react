@@ -1,3 +1,4 @@
+from common.pagination import PageLimitPagination
 from common.permissions import IsAuthorOrReadOnly
 from rest_framework.viewsets import ModelViewSet
 
@@ -11,6 +12,8 @@ class RecipeViewSet(ModelViewSet):
     permission_classes = [
         IsAuthorOrReadOnly,
     ]
+    pagination_class = PageLimitPagination
+    pagination_class.page_size = 6
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
