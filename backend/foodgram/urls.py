@@ -6,10 +6,11 @@ from django.urls import include, path
 from djoser.views import TokenCreateView, TokenDestroyView, UserViewSet
 from recipes.views import RecipeViewSet
 from rest_framework import routers
+from users.views import CustomUserViewSet
 
 router = routers.DefaultRouter()
-router.register('users', UserViewSet)
-router.register('recipes', RecipeViewSet)
+router.register(r'users', UserViewSet)
+router.register(r'recipes', RecipeViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
