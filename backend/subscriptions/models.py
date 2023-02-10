@@ -7,13 +7,13 @@ from django.utils.translation import gettext_lazy as _
 class Subscription(models.Model):
     subscriber = models.ForeignKey(
         settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
         related_name='subscribing',
-        on_delete=models.CASCADE
     )
     subscribing = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        related_name='subscriber',
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name='subscribers',
     )
 
     class Meta:
@@ -25,7 +25,5 @@ class Subscription(models.Model):
         ]
 
     def clean(self):
-        super().clean()
-
         if self.subscriber == self.subscribing:
             raise ValidationError(_('You can\'t subscribe to yourself!'))

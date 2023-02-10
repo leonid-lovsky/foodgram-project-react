@@ -9,8 +9,8 @@ class User(AbstractUser):
 
     email = models.EmailField(
         _('email address'),
+        unique=True,
         blank=False,
-        unique=True
     )
     username = models.CharField(
         _('username'),
@@ -27,12 +27,12 @@ class User(AbstractUser):
     first_name = models.CharField(
         _('first name'),
         max_length=150,
-        blank=False
+        blank=False,
     )
     last_name = models.CharField(
         _('last name'),
         max_length=150,
-        blank=False
+        blank=False,
     )
 
     USERNAME_FIELD = 'email'

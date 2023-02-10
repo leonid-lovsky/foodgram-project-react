@@ -10,6 +10,7 @@ class Recipe(models.Model):
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
+        related_name='recipes',
     )
     name = models.CharField(
         _('название'),
@@ -24,10 +25,12 @@ class Recipe(models.Model):
     )
     ingredients = models.ManyToManyField(
         Ingredient,
+        related_name='recipes',
         through='RecipeIngredient',
     )
     tags = models.ManyToManyField(
         Tag,
+        related_name='recipes',
         through='RecipeTag',
     )
     cooking_time = models.IntegerField(

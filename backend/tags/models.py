@@ -13,8 +13,8 @@ class Tag(models.Model):
     name = models.CharField(
         _('название'),
         max_length=50,
-        blank=False,
         unique=True,
+        blank=False,
     )
     color = models.CharField(
         _('цвет'),
@@ -22,12 +22,12 @@ class Tag(models.Model):
         validators=[
             COLOR_VALIDATOR,
         ],
-        blank=False,
         unique=True,
+        blank=False,
     )
     slug = models.SlugField(
         _('slug'),
         max_length=50,
-        blank=False,
         unique=True,
+        blank=False,
     )
