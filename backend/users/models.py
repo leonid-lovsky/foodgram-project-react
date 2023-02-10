@@ -7,6 +7,11 @@ from django.utils.translation import gettext_lazy as _
 class User(AbstractUser):
     username_validator = ASCIIUsernameValidator()
 
+    email = models.EmailField(
+        _('email address'),
+        blank=False,
+        unique=True
+    )
     username = models.CharField(
         _('username'),
         max_length=150,
@@ -28,11 +33,6 @@ class User(AbstractUser):
         _('last name'),
         max_length=150,
         blank=False
-    )
-    email = models.EmailField(
-        _('email address'),
-        blank=False,
-        unique=True
     )
 
     USERNAME_FIELD = 'email'

@@ -22,7 +22,6 @@ INSTALLED_APPS = [
     'favorites.apps.FavoritesConfig',
     'subscriptions.apps.SubscriptionsConfig',
     'ingredients.apps.IngredientsConfig',
-    # 'auth.apps.AuthConfig',
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
