@@ -1,10 +1,11 @@
+import django
 from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db.models import (
-    CASCADE, RESTRICT, CharField, ForeignKey,
-    ImageField, IntegerField, ManyToManyField, Model,
-    TextField
+    CASCADE, RESTRICT, CharField, DateTimeField, ForeignKey, ImageField,
+    IntegerField, ManyToManyField, Model, TextField
 )
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from ingredients.models import Ingredient
 from tags.models import Tag
@@ -43,6 +44,13 @@ class Recipe(Model):
             MinValueValidator(1),
         ],
     )
+    pub_date = DateTimeField(
+        _('дата публикации'),
+        auto_now_add=True,
+    )
+
+    class Meta:
+        ordering = ['-pub_date']
 
 
 class RecipeIngredient(Model):

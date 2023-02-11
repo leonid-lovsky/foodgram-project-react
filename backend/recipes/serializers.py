@@ -1,3 +1,4 @@
+from drf_extra_fields.fields import Base64ImageField
 from rest_framework.serializers import (
     ModelSerializer, ReadOnlyField, SerializerMethodField
 )
@@ -8,6 +9,8 @@ from .models import Recipe
 class RecipeSerializer(ModelSerializer):
     is_favorited = SerializerMethodField()
     is_in_shopping_cart = SerializerMethodField()
+
+    image = Base64ImageField()
 
     class Meta:
         model = Recipe

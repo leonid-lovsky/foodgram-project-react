@@ -13,7 +13,6 @@ class Tag(Model):
         _('название'),
         max_length=200,
         unique=True,
-        blank=False,
     )
     color = CharField(
         _('цвет'),
@@ -22,11 +21,9 @@ class Tag(Model):
             COLOR_VALIDATOR,
         ],
         unique=True,
-        blank=False,
     )
     slug = SlugField(
         _('slug'),
         max_length=200,
         unique=True,
-        blank=False,
     )
