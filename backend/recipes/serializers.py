@@ -1,4 +1,6 @@
-from rest_framework.serializers import ModelSerializer, SerializerMethodField
+from rest_framework.serializers import (
+    ModelSerializer, ReadOnlyField, SerializerMethodField
+)
 
 from .models import Recipe
 
@@ -10,6 +12,7 @@ class RecipeSerializer(ModelSerializer):
     class Meta:
         model = Recipe
         fields = [
+            'id',
             'tags',
             'author',
             'ingredients',
@@ -19,6 +22,9 @@ class RecipeSerializer(ModelSerializer):
             'image',
             'text',
             'cooking_time',
+        ]
+        read_only_fields = [
+            'author',
         ]
 
     def get_is_favorited(self, obj):
