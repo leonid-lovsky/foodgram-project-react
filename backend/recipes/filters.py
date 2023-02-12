@@ -14,9 +14,11 @@ User = get_user_model()
 class RecipeFilter(FilterSet):
     is_favorited = BooleanFilter(
         label=_('Is favorited'),
+        method='get_is_favorited',
     )
     is_in_shopping_cart = BooleanFilter(
         label=_('Is in shopping cart'),
+        method='get_is_in_shopping_cart',
     )
     author = ModelChoiceFilter(
         queryset=User.objects.all(),
@@ -26,6 +28,22 @@ class RecipeFilter(FilterSet):
         field_name='tags__slug',
         label=_('Tags'),
     )
+
+    def get_is_favorited(self, queryset, field_name, value):
+        # request = self.context["request"]
+        # return (
+        # request.user.is_authenticated
+        # and recipe.favoriterecipe_set.filter(user=request.user).exists()
+        # )
+        return queryset
+
+    def get_is_in_shopping_cart(self, queryset, field_name, valuej):
+        # request = self.context["request"]
+        # return (
+        # request.user.is_authenticated
+        # and recipe.shoppingcartrecipe_set.filter(user=request.user).exists()
+        # )
+        return queryset
 
     class Meta:
         model = Recipe
