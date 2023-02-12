@@ -30,19 +30,17 @@ class RecipeFilter(FilterSet):
     )
 
     def get_is_favorited(self, queryset, field_name, value):
-        # request = self.context["request"]
-        # return (
-        # request.user.is_authenticated
-        # and recipe.favoriterecipe_set.filter(user=request.user).exists()
-        # )
+        if value and not self.request.user.is_anonymous:
+            return queryset.filter(
+                # favorites__user=self.request.user
+            )
         return queryset
 
-    def get_is_in_shopping_cart(self, queryset, field_name, valuej):
-        # request = self.context["request"]
-        # return (
-        # request.user.is_authenticated
-        # and recipe.shoppingcartrecipe_set.filter(user=request.user).exists()
-        # )
+    def get_is_in_shopping_cart(self, queryset, field_name, value):
+        if value and not self.request.user.is_anonymous:
+            return queryset.filter(
+                # cart__user=self.request.user
+            )
         return queryset
 
     class Meta:

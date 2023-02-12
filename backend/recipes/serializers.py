@@ -28,6 +28,8 @@ class RecipeSerializer(ModelSerializer):
         ]
         read_only_fields = [
             'author',
+            'is_favorited',
+            'is_in_shopping_cart'
         ]
 
     def get_is_favorited(self, obj):
