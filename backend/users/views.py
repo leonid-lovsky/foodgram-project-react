@@ -1,7 +1,7 @@
+from common.pagination import PageLimitPagination
 from django.contrib.auth import get_user_model
 from djoser.views import UserViewSet
 
-from common.pagination import PageLimitPagination
 User = get_user_model()
 
 
