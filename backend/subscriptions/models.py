@@ -8,12 +8,12 @@ class Subscription(Model):
     user = ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=CASCADE,
-        # related_name='authors',
+        related_name='subscribing',
     )
     author = ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=CASCADE,
-        # related_name='users',
+        related_name='subscribers',
     )
 
     class Meta:
