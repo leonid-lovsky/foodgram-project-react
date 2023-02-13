@@ -76,7 +76,7 @@ class RecipeIngredient(Model):
         constraints = [
             UniqueConstraint(
                 fields=['recipe', 'ingredient'],
-                name='unique ingredient'
+                name='unique recipe ingredient'
             ),
         ]
 
@@ -97,7 +97,7 @@ class RecipeTag(Model):
         constraints = [
             UniqueConstraint(
                 fields=['recipe', 'tag'],
-                name='unique tag'
+                name='unique recipe tag'
             ),
         ]
 
@@ -118,6 +118,27 @@ class RecipeCart(Model):
         constraints = [
             UniqueConstraint(
                 fields=['recipe', 'user'],
-                name='unique cart'
+                name='unique recipe cart'
+            ),
+        ]
+
+
+class RecipeFavorite(Model):
+    recipe = ForeignKey(
+        Recipe,
+        on_delete=CASCADE,
+        related_name='users',
+    )
+    user = ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=CASCADE,
+        related_name='recipes',
+    )
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                fields=['recipe', 'user'],
+                name='unique recipe favorite'
             ),
         ]
