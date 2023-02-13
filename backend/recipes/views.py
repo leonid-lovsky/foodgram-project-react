@@ -5,6 +5,10 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import (
     IsAuthenticated, IsAuthenticatedOrReadOnly
 )
+from rest_framework.response import Response
+from rest_framework.status import (
+    HTTP_201_CREATED, HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
+)
 from rest_framework.viewsets import ModelViewSet
 
 from common.pagination import PageLimitPagination
@@ -12,7 +16,7 @@ from common.permissions import IsAuthorOrReadOnly
 
 from .filters import RecipeFilter
 from .models import Recipe, RecipeCart
-from .serializers import RecipeSerializer
+from .serializers import RecipeSerializer, RecipeShortSerializer
 
 
 class RecipeViewSet(ModelViewSet):
@@ -45,16 +49,35 @@ class RecipeViewSet(ModelViewSet):
     def shopping_cart(self, request, pk=None):
         recipe = get_object_or_404(Recipe, pk=pk)
         user = request.user
+
+        item = RecipeCart.objects.filter(
+            recipe=recipe,
+            user=user,
+        )
+
         if request.method == 'POST':
+            if item.exists():
+                return Response(
+                    status=HTTP_400_BAD_REQUEST
+                )
+
             RecipeCart.objects.create(
                 recipe=recipe,
                 user=user,
             )
-        if request.method == 'DELETE':
-            item = RecipeCart.objects.filter(
-                recipe=recipe,
-                user=user,
+            serializer = RecipeShortSerializer(recipe)
+            return Response(
+                serializer.data,
+                status=HTTP_201_CREATED
             )
+
+        if request.method == 'DELETE':
             if not item.exists():
-                raise Http404
+                return Response(
+                    status=HTTP_400_BAD_REQUEST
+                )
+
             item.delete()
+            return Response(
+                status=HTTP_204_NO_CONTENT
+            )

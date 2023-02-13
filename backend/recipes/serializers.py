@@ -51,7 +51,8 @@ class RecipeSerializer(ModelSerializer):
         return False
 
 
-class RecipeCartSerializer(ModelSerializer):
+class RecipeShortSerializer(ModelSerializer):
+    image = Base64ImageField()
 
     class Meta:
         model = Recipe
