@@ -6,7 +6,7 @@ from django_filters.rest_framework import (
 )
 from tags.models import Tag
 
-from .models import Recipe
+from .models import Recipe, RecipeFavorite, RecipeShoppingCart
 
 User = get_user_model()
 
@@ -32,13 +32,27 @@ class RecipeFilter(FilterSet):
     def get_is_favorited(self, queryset, field_name, value):
         user = self.request.user
         if user and user.is_authenticated:
-            return queryset.filter(favorites__user=user)
+            # favorites_ids = (
+            #     RecipeFavorite.objects.filter(user=user)
+            #     .values('recipe_id')
+            # )
+            # return queryset.filter(pk__in=favorites_ids)
+            return queryset.filter(
+                recipefavorite__user=self.request.user
+            )
         return queryset
 
     def get_is_in_shopping_cart(self, queryset, field_name, value):
         user = self.request.user
         if user and user.is_authenticated:
-            return queryset.filter(shopping_cart__user=user)
+            # recipes_in_shopping_cart_ids = (
+            #     RecipeShoppingCart.objects.filter(user=user)
+            #     .values('recipe_id')
+            # )
+            # return queryset.filter(pk__in=recipes_in_shopping_cart_ids)
+            return queryset.filter(
+                recipeshoppingcart__user=self.request.user
+            )
         return queryset
 
     class Meta:

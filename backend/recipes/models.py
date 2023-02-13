@@ -102,7 +102,7 @@ class RecipeTag(Model):
         ]
 
 
-class RecipeCart(Model):
+class RecipeShoppingCart(Model):
     recipe = ForeignKey(
         Recipe,
         on_delete=CASCADE,

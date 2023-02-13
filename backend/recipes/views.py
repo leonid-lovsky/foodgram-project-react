@@ -15,7 +15,7 @@ from common.pagination import PageLimitPagination
 from common.permissions import IsAuthorOrReadOnly
 
 from .filters import RecipeFilter
-from .models import Recipe, RecipeCart, RecipeFavorite
+from .models import Recipe, RecipeShoppingCart, RecipeFavorite
 from .serializers import RecipeSerializer, RecipeShortSerializer
 
 
@@ -80,7 +80,7 @@ class RecipeViewSet(ModelViewSet, RecipeMixin):
         permission_classes=[IsAuthenticated]
     )
     def shopping_cart(self, request, pk=None):
-        self.custom_action(request, RecipeCart, pk)
+        self.custom_action(request, RecipeShoppingCart, pk)
 
     @action(
         detail=True,

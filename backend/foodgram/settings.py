@@ -21,8 +21,6 @@ INSTALLED_APPS = [
     'users',
     'tags',
     'recipes',
-    'cart',
-    'favorites',
     'subscriptions',
     'ingredients',
     'rest_framework',
