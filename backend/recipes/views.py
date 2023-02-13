@@ -15,42 +15,16 @@ from common.pagination import PageLimitPagination
 from common.permissions import IsAuthorOrReadOnly
 
 from .filters import RecipeFilter
-from .models import Recipe, RecipeCart
+from .models import Recipe, RecipeCart, RecipeFavorite
 from .serializers import RecipeSerializer, RecipeShortSerializer
 
 
-class RecipeViewSet(ModelViewSet):
-    queryset = Recipe.objects.all()
-    serializer_class = RecipeSerializer
-    permission_classes = [
-        IsAuthorOrReadOnly,
-    ]
-    pagination_class = PageLimitPagination
-    pagination_class.page_size = 6
-    filter_backends = [
-        DjangoFilterBackend,
-    ]
-    filterset_class = RecipeFilter
-
-    def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
-
-    @action(
-        detail=True,
-        methods=[
-            'post',
-            'delete',
-        ],
-        url_path='shopping_cart',
-        permission_classes=[
-            IsAuthenticated
-        ]
-    )
-    def shopping_cart(self, request, pk=None):
+class RecipeMixin():
+    def custom_action(self, request, model, pk=None):
         recipe = get_object_or_404(Recipe, pk=pk)
         user = request.user
 
-        item = RecipeCart.objects.filter(
+        item = model.objects.filter(
             recipe=recipe,
             user=user,
         )
@@ -61,7 +35,7 @@ class RecipeViewSet(ModelViewSet):
                     status=HTTP_400_BAD_REQUEST
                 )
 
-            RecipeCart.objects.create(
+            model.objects.create(
                 recipe=recipe,
                 user=user,
             )
@@ -81,3 +55,38 @@ class RecipeViewSet(ModelViewSet):
             return Response(
                 status=HTTP_204_NO_CONTENT
             )
+
+
+class RecipeViewSet(ModelViewSet, RecipeMixin):
+    queryset = Recipe.objects.all()
+    serializer_class = RecipeSerializer
+    permission_classes = [
+        IsAuthorOrReadOnly,
+    ]
+    pagination_class = PageLimitPagination
+    pagination_class.page_size = 6
+    filter_backends = [
+        DjangoFilterBackend,
+    ]
+    filterset_class = RecipeFilter
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+    @action(
+        detail=True,
+        methods=['post', 'delete'],
+        url_path='shopping_cart',
+        permission_classes=[IsAuthenticated]
+    )
+    def shopping_cart(self, request, pk=None):
+        self.custom_action(request, RecipeCart, pk)
+
+    @action(
+        detail=True,
+        methods=['post', 'delete'],
+        url_path='favorite',
+        permission_classes=[IsAuthenticated]
+    )
+    def favorite(self, request, pk=None):
+        self.custom_action(request, RecipeFavorite, pk)
