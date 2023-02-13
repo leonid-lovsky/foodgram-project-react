@@ -49,3 +49,20 @@ class RecipeSerializer(ModelSerializer):
         # )
         user = self.context.get('user')
         return False
+
+
+class RecipeCartSerializer(ModelSerializer):
+
+    class Meta:
+        model = Recipe
+        fields = [
+            'id',
+            'name',
+            'image',
+            'cooking_time',
+        ]
+        read_only_fields = [
+            'name',
+            'image',
+            'cooking_time',
+        ]

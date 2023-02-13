@@ -5,25 +5,25 @@ from django.utils.translation import gettext_lazy as _
 
 
 class Subscription(Model):
-    subscriber = ForeignKey(
+    user = ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=CASCADE,
-        related_name='subscribing',
+        related_name='authors',
     )
-    subscribing = ForeignKey(
+    author = ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=CASCADE,
-        related_name='subscribers',
+        related_name='users',
     )
 
     class Meta:
         constraints = [
             UniqueConstraint(
-                fields=['subscriber', 'subscribing'],
+                fields=['user', 'author'],
                 name='unique subscription'
             ),
         ]
 
     def clean(self):
-        if self.subscriber == self.subscribing:
+        if self.user == self.author:
             raise ValidationError(_('You can\'t subscribe to yourself!'))

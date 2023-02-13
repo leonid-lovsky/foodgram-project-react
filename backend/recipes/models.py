@@ -3,10 +3,11 @@ from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db.models import (
     CASCADE, RESTRICT, CharField, DateTimeField, ForeignKey, ImageField,
-    IntegerField, ManyToManyField, Model, TextField
+    IntegerField, ManyToManyField, Model, TextField, UniqueConstraint
 )
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+
 from ingredients.models import Ingredient
 from tags.models import Tag
 
@@ -23,7 +24,7 @@ class Recipe(Model):
     )
     image = ImageField(
         _('картинка'),
-        upload_to='recipes',
+        upload_to='recipes/images',
     )
     text = TextField(
         _('описание'),
@@ -57,10 +58,12 @@ class RecipeIngredient(Model):
     recipe = ForeignKey(
         Recipe,
         on_delete=CASCADE,
+        related_name='ingredients',
     )
     ingredient = ForeignKey(
         Ingredient,
         on_delete=RESTRICT,
+        related_name='recipes',
     )
     amount = IntegerField(
         _('количество'),
@@ -69,13 +72,52 @@ class RecipeIngredient(Model):
         ],
     )
 
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                fields=['recipe', 'ingredient'],
+                name='unique ingredient'
+            ),
+        ]
+
 
 class RecipeTag(Model):
     recipe = ForeignKey(
         Recipe,
         on_delete=CASCADE,
+        related_name='tags',
     )
     tag = ForeignKey(
         Tag,
         on_delete=RESTRICT,
+        related_name='recipes',
     )
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                fields=['recipe', 'tag'],
+                name='unique tag'
+            ),
+        ]
+
+
+class RecipeCart(Model):
+    recipe = ForeignKey(
+        Recipe,
+        on_delete=CASCADE,
+        related_name='users',
+    )
+    user = ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=CASCADE,
+        related_name='recipes',
+    )
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                fields=['recipe', 'user'],
+                name='unique cart'
+            ),
+        ]
