@@ -3,7 +3,7 @@ from rest_framework.serializers import (
     ModelSerializer, ReadOnlyField, SerializerMethodField
 )
 
-from .models import Recipe
+from .models import Recipe, RecipeCart, RecipeFavorite
 
 
 class RecipeSerializer(ModelSerializer):
@@ -33,21 +33,23 @@ class RecipeSerializer(ModelSerializer):
         ]
 
     def get_is_favorited(self, obj):
-        # request = self.context["request"]
-        # return (
-        # request.user.is_authenticated
-        # and recipe.favoriterecipe_set.filter(user=request.user).exists()
-        # )
-        user = self.context.get('user')
+        request = self.context.get('request')
+        user = request.user
+        if user and user.is_authenticated:
+            return RecipeFavorite.objects.filter(
+                recipe=obj,
+                user=user
+            ).exists()
         return False
 
     def get_is_in_shopping_cart(self, obj):
-        # request = self.context["request"]
-        # return (
-        # request.user.is_authenticated
-        # and recipe.shoppingcartrecipe_set.filter(user=request.user).exists()
-        # )
-        user = self.context.get('user')
+        request = self.context.get('request')
+        user = request.user
+        if user and user.is_authenticated:
+            return RecipeCart.objects.filter(
+                recipe=obj,
+                user=user
+            ).exists()
         return False
 
 
