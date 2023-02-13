@@ -33,8 +33,9 @@ class RecipeSerializer(ModelSerializer):
         ]
 
     def get_is_favorited(self, obj):
-        request = self.context.get('request')
-        user = request.user
+        user = self.request.user
+        # request = self.context.get('request')
+        # user = request.user
         if user and user.is_authenticated:
             return RecipeFavorite.objects.filter(
                 recipe=obj,
@@ -43,8 +44,9 @@ class RecipeSerializer(ModelSerializer):
         return False
 
     def get_is_in_shopping_cart(self, obj):
-        request = self.context.get('request')
-        user = request.user
+        user = self.request.user
+        # request = self.context.get('request')
+        # user = request.user
         if user and user.is_authenticated:
             return RecipeCart.objects.filter(
                 recipe=obj,

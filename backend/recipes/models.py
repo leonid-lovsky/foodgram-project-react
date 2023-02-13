@@ -16,7 +16,7 @@ class Recipe(Model):
     author = ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=CASCADE,
-        related_name='recipes',
+        # related_name='recipes',
     )
     name = CharField(
         _('название'),
@@ -31,13 +31,13 @@ class Recipe(Model):
     )
     ingredients = ManyToManyField(
         Ingredient,
-        related_name='recipes',
         through='RecipeIngredient',
+        # related_name='recipes',
     )
     tags = ManyToManyField(
         Tag,
-        related_name='recipes',
         through='RecipeTag',
+        # related_name='recipes',
     )
     cooking_time = IntegerField(
         _('время приготовления'),
@@ -58,12 +58,12 @@ class RecipeIngredient(Model):
     recipe = ForeignKey(
         Recipe,
         on_delete=CASCADE,
-        related_name='ingredients',
+        # related_name='ingredients',
     )
     ingredient = ForeignKey(
         Ingredient,
         on_delete=RESTRICT,
-        related_name='recipes',
+        # related_name='recipes',
     )
     amount = IntegerField(
         _('количество'),
@@ -76,7 +76,7 @@ class RecipeIngredient(Model):
         constraints = [
             UniqueConstraint(
                 fields=['recipe', 'ingredient'],
-                name='unique recipe ingredient'
+                name='%(app_label)s_%(class)s_unique_relationships'
             ),
         ]
 
@@ -85,19 +85,19 @@ class RecipeTag(Model):
     recipe = ForeignKey(
         Recipe,
         on_delete=CASCADE,
-        related_name='tags',
+        # related_name='tags',
     )
     tag = ForeignKey(
         Tag,
         on_delete=RESTRICT,
-        related_name='recipes',
+        # related_name='recipes',
     )
 
     class Meta:
         constraints = [
             UniqueConstraint(
                 fields=['recipe', 'tag'],
-                name='unique recipe tag'
+                name='%(app_label)s_%(class)s_unique_relationships'
             ),
         ]
 
@@ -106,19 +106,19 @@ class RecipeCart(Model):
     recipe = ForeignKey(
         Recipe,
         on_delete=CASCADE,
-        related_name='users',
+        # related_name='users',
     )
     user = ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=CASCADE,
-        related_name='recipes',
+        # related_name='recipes',
     )
 
     class Meta:
         constraints = [
             UniqueConstraint(
                 fields=['recipe', 'user'],
-                name='unique recipe cart'
+                name='%(app_label)s_%(class)s_unique_relationships'
             ),
         ]
 
@@ -127,18 +127,18 @@ class RecipeFavorite(Model):
     recipe = ForeignKey(
         Recipe,
         on_delete=CASCADE,
-        related_name='users',
+        # related_name='users',
     )
     user = ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=CASCADE,
-        related_name='recipes',
+        # related_name='recipes',
     )
 
     class Meta:
         constraints = [
             UniqueConstraint(
                 fields=['recipe', 'user'],
-                name='unique recipe favorite'
+                name='%(app_label)s_%(class)s_unique_relationships'
             ),
         ]

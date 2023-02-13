@@ -8,19 +8,19 @@ class Subscription(Model):
     user = ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=CASCADE,
-        related_name='authors',
+        # related_name='authors',
     )
     author = ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=CASCADE,
-        related_name='users',
+        # related_name='users',
     )
 
     class Meta:
         constraints = [
             UniqueConstraint(
                 fields=['user', 'author'],
-                name='unique subscription'
+                name='%(app_label)s_%(class)s_unique_relationships'
             ),
         ]
 

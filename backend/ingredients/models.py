@@ -18,6 +18,6 @@ class Ingredient(Model):
         constraints = [
             UniqueConstraint(
                 fields=['name', 'measurement_unit'],
-                name='unique ingredient'
+                name='%(app_label)s_%(class)s_unique_relationships'
             ),
         ]
