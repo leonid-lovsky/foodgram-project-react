@@ -32,8 +32,6 @@ class RecipeSerializer(ModelSerializer):
         ]
         read_only_fields = [
             'author',
-            'is_favorited',
-            'is_in_shopping_cart'
         ]
 
     def get_is_favorited(self, obj):
@@ -60,11 +58,6 @@ class RecipeShortSerializer(ModelSerializer):
         model = Recipe
         fields = [
             'id',
-            'name',
-            'image',
-            'cooking_time',
-        ]
-        read_only_fields = [
             'name',
             'image',
             'cooking_time',

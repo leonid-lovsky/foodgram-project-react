@@ -1,3 +1,4 @@
+from rest_framework import filters
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from .models import Tag

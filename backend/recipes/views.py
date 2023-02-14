@@ -2,9 +2,7 @@ from django.http import Http404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import (
-    IsAuthenticated, IsAuthenticatedOrReadOnly
-)
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import (
     HTTP_201_CREATED, HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
@@ -12,24 +10,20 @@ from rest_framework.status import (
 from rest_framework.viewsets import ModelViewSet
 
 from common.pagination import PageLimitPagination
-from common.permissions import IsAuthorOrReadOnly
+from common.permissions import IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly
 
 from .filters import RecipeFilter
-from .models import Recipe, RecipeShoppingCart, RecipeFavorite
+from .models import Recipe, RecipeFavorite, RecipeShoppingCart
 from .serializers import RecipeSerializer, RecipeShortSerializer
 
 
 class RecipeViewSet(ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
-    permission_classes = [
-        IsAuthorOrReadOnly,
-    ]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
     pagination_class = PageLimitPagination
     pagination_class.page_size = 6
-    filter_backends = [
-        DjangoFilterBackend,
-    ]
+    filter_backends = [DjangoFilterBackend]
     filterset_class = RecipeFilter
 
     def perform_create(self, serializer):

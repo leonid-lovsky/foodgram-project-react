@@ -72,15 +72,6 @@ class AuthorWithRecipesSerializer(ModelSerializer):
             'recipes',
             'recipes_count',
         ]
-        read_only_fields = [
-            'email',
-            'username',
-            'first_name',
-            'last_name',
-            'is_subscribed',
-            'recipes',
-            'recipes_count',
-        ]
 
     def get_is_subscribed(self, obj):
         request = self.context.get('request')
