@@ -52,11 +52,6 @@ class RecipeViewSet(ModelViewSet):
         )
 
         if request.method == 'POST':
-            if recipe_shopping_cart.exists():
-                return Response(
-                    status=HTTP_400_BAD_REQUEST
-                )
-
             RecipeShoppingCart.objects.create(
                 recipe=recipe,
                 user=user,
@@ -68,11 +63,6 @@ class RecipeViewSet(ModelViewSet):
             )
 
         if request.method == 'DELETE':
-            if not recipe_shopping_cart.exists():
-                return Response(
-                    status=HTTP_400_BAD_REQUEST
-                )
-
             recipe_shopping_cart.delete()
             return Response(
                 status=HTTP_204_NO_CONTENT

@@ -54,11 +54,6 @@ class CustomUserViewSet(UserViewSet):
         )
 
         if request.method == 'POST':
-            if subscription.exists():
-                return Response(
-                    status=HTTP_400_BAD_REQUEST
-                )
-
             Subscription.objects.create(
                 author=author,
                 user=user,
@@ -70,11 +65,6 @@ class CustomUserViewSet(UserViewSet):
             )
 
         if request.method == 'DELETE':
-            if not subscription.exists():
-                return Response(
-                    status=HTTP_400_BAD_REQUEST
-                )
-
             subscription.delete()
             return Response(
                 status=HTTP_204_NO_CONTENT
