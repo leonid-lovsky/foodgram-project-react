@@ -16,7 +16,6 @@ class Recipe(Model):
     author = ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=CASCADE,
-        # related_name='recipes',
     )
     name = CharField(
         _('название'),
@@ -32,12 +31,10 @@ class Recipe(Model):
     ingredients = ManyToManyField(
         Ingredient,
         through='RecipeIngredient',
-        # related_name='recipes',
     )
     tags = ManyToManyField(
         Tag,
         through='RecipeTag',
-        # related_name='recipes',
     )
     cooking_time = IntegerField(
         _('время приготовления'),
@@ -58,12 +55,10 @@ class RecipeIngredient(Model):
     recipe = ForeignKey(
         Recipe,
         on_delete=CASCADE,
-        # related_name='ingredients',
     )
     ingredient = ForeignKey(
         Ingredient,
         on_delete=RESTRICT,
-        # related_name='recipes',
     )
     amount = IntegerField(
         _('количество'),
@@ -85,12 +80,10 @@ class RecipeTag(Model):
     recipe = ForeignKey(
         Recipe,
         on_delete=CASCADE,
-        # related_name='tags',
     )
     tag = ForeignKey(
         Tag,
         on_delete=RESTRICT,
-        # related_name='recipes',
     )
 
     class Meta:
@@ -106,12 +99,10 @@ class RecipeShoppingCart(Model):
     recipe = ForeignKey(
         Recipe,
         on_delete=CASCADE,
-        # related_name='users',
     )
     user = ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=CASCADE,
-        # related_name='recipes',
     )
 
     class Meta:
@@ -127,12 +118,10 @@ class RecipeFavorite(Model):
     recipe = ForeignKey(
         Recipe,
         on_delete=CASCADE,
-        # related_name='users',
     )
     user = ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=CASCADE,
-        # related_name='recipes',
     )
 
     class Meta:
