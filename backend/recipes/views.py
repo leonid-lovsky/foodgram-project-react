@@ -44,7 +44,7 @@ class RecipeViewSet(ModelViewSet):
     )
     def shopping_cart(self, request, pk=None):
         recipe = get_object_or_404(Recipe, pk=pk)
-        user = self.request.user
+        user = request.user
 
         recipe_shopping_cart = RecipeShoppingCart.objects.filter(
             recipe=recipe,
@@ -76,7 +76,7 @@ class RecipeViewSet(ModelViewSet):
     )
     def favorite(self, request, pk=None):
         recipe = get_object_or_404(Recipe, pk=pk)
-        user = self.request.user
+        user = request.user
 
         recipe_favorite = RecipeFavorite.objects.filter(
             recipe=recipe,

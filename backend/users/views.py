@@ -28,7 +28,7 @@ class CustomUserViewSet(UserViewSet):
         permission_classes=[IsAuthenticated],
     )
     def subscriptions(self, request, pk=None):
-        user = self.request.user
+        user = request.user
         following = self.get_queryset().filter(
             follow__user=user
         )
@@ -46,7 +46,7 @@ class CustomUserViewSet(UserViewSet):
     )
     def subscribe(self, request, pk=None):
         author = get_object_or_404(User, pk=pk)
-        user = self.request.user
+        user = request.user
 
         subscription = Subscription.objects.filter(
             author=author,

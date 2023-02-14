@@ -29,7 +29,8 @@ class CustomUserSerializer(UserSerializer):
         ]
 
     def get_is_subscribed(self, obj):
-        user = self.request.user
+        request = self.context.get('request')
+        user = request.user
         return Subscription.objects.filter(
             user=user, author=obj,
         ).exists()
@@ -52,7 +53,9 @@ class AuthorWithRecipesSerializer(ModelSerializer):
     is_subscribed = SerializerMethodField(
         method_name='get_is_subscribed'
     )
-    recipes = RecipeShortSerializer(many=True)
+    recipes = SerializerMethodField(
+        method_name='get_recipes'
+    )
     recipes_count = SerializerMethodField(
         method_name='get_recipes_count'
     )
@@ -80,10 +83,19 @@ class AuthorWithRecipesSerializer(ModelSerializer):
         ]
 
     def get_is_subscribed(self, obj):
-        user = self.request.user
+        request = self.context.get('request')
+        user = request.user
         return Subscription.objects.filter(
             user=user, author=obj,
         ).exists()
+
+    def get_recipes(self, obj):
+        request = self.context.get('request')
+        limit = request.GET.get('recipes_limit')
+        queryset = Recipe.objects.filter(author=obj.author)
+        if limit:
+            queryset = queryset[:int(limit)]
+        return RecipeShortSerializer(queryset, many=True).data
 
     def get_recipes_count(self, obj):
         return Recipe.objects.filter(
