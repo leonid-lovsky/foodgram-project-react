@@ -31,29 +31,15 @@ class RecipeFilter(FilterSet):
 
     def get_is_favorited(self, queryset, field_name, value):
         user = self.request.user
-        if user.is_authenticated:
-            # favorites_ids = (
-            #     RecipeFavorite.objects.filter(user=user)
-            #     .values('recipe_id')
-            # )
-            # return queryset.filter(pk__in=favorites_ids)
-            return queryset.filter(
-                recipefavorite__user=self.request.user
-            )
-        return queryset
+        return queryset.filter(
+            recipefavorite__user=user
+        )
 
     def get_is_in_shopping_cart(self, queryset, field_name, value):
         user = self.request.user
-        if user.is_authenticated:
-            # recipes_in_shopping_cart_ids = (
-            #     RecipeShoppingCart.objects.filter(user=user)
-            #     .values('recipe_id')
-            # )
-            # return queryset.filter(pk__in=recipes_in_shopping_cart_ids)
-            return queryset.filter(
-                recipeshoppingcart__user=self.request.user
-            )
-        return queryset
+        return queryset.filter(
+            recipeshoppingcart__user=user
+        )
 
     class Meta:
         model = Recipe

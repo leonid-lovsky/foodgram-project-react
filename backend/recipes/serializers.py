@@ -7,8 +7,12 @@ from .models import Recipe, RecipeShoppingCart, RecipeFavorite
 
 
 class RecipeSerializer(ModelSerializer):
-    is_favorited = SerializerMethodField()
-    is_in_shopping_cart = SerializerMethodField()
+    is_favorited = SerializerMethodField(
+        method_name='get_is_favorited'
+    )
+    is_in_shopping_cart = SerializerMethodField(
+        method_name='get_is_in_shopping_cart'
+    )
 
     image = Base64ImageField()
 
@@ -34,25 +38,17 @@ class RecipeSerializer(ModelSerializer):
 
     def get_is_favorited(self, obj):
         user = self.request.user
-        # request = self.context.get('request')
-        # user = request.user
-        if user.is_authenticated:
-            return RecipeFavorite.objects.filter(
-                recipe=obj,
-                user=user
-            ).exists()
-        return False
+        return RecipeFavorite.objects.filter(
+            recipe=obj,
+            user=user
+        ).exists()
 
     def get_is_in_shopping_cart(self, obj):
         user = self.request.user
-        # request = self.context.get('request')
-        # user = request.user
-        if user.is_authenticated:
-            return RecipeShoppingCart.objects.filter(
-                recipe=obj,
-                user=user
-            ).exists()
-        return False
+        return RecipeShoppingCart.objects.filter(
+            recipe=obj,
+            user=user
+        ).exists()
 
 
 class RecipeShortSerializer(ModelSerializer):

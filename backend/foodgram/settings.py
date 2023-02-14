@@ -21,7 +21,6 @@ INSTALLED_APPS = [
     'users',
     'tags',
     'recipes',
-    'subscriptions',
     'ingredients',
     'rest_framework',
     'rest_framework.authtoken',

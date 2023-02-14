@@ -19,45 +19,7 @@ from .models import Recipe, RecipeShoppingCart, RecipeFavorite
 from .serializers import RecipeSerializer, RecipeShortSerializer
 
 
-class RecipeMixin():
-    def custom_action(self, request, model, pk=None):
-        recipe = get_object_or_404(Recipe, pk=pk)
-        user = request.user
-
-        item = model.objects.filter(
-            recipe=recipe,
-            user=user,
-        )
-
-        if request.method == 'POST':
-            if item.exists():
-                return Response(
-                    status=HTTP_400_BAD_REQUEST
-                )
-
-            model.objects.create(
-                recipe=recipe,
-                user=user,
-            )
-            serializer = RecipeShortSerializer(recipe)
-            return Response(
-                serializer.data,
-                status=HTTP_201_CREATED
-            )
-
-        if request.method == 'DELETE':
-            if not item.exists():
-                return Response(
-                    status=HTTP_400_BAD_REQUEST
-                )
-
-            item.delete()
-            return Response(
-                status=HTTP_204_NO_CONTENT
-            )
-
-
-class RecipeViewSet(ModelViewSet, RecipeMixin):
+class RecipeViewSet(ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     permission_classes = [
@@ -71,7 +33,8 @@ class RecipeViewSet(ModelViewSet, RecipeMixin):
     filterset_class = RecipeFilter
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        user = self.request.user
+        serializer.save(author=user)
 
     @action(
         detail=True,
@@ -80,7 +43,40 @@ class RecipeViewSet(ModelViewSet, RecipeMixin):
         permission_classes=[IsAuthenticated]
     )
     def shopping_cart(self, request, pk=None):
-        self.custom_action(request, RecipeShoppingCart, pk)
+        recipe = get_object_or_404(Recipe, pk=pk)
+        user = self.request.user
+
+        recipe_shopping_cart = RecipeShoppingCart.objects.filter(
+            recipe=recipe,
+            user=user,
+        )
+
+        if request.method == 'POST':
+            if recipe_shopping_cart.exists():
+                return Response(
+                    status=HTTP_400_BAD_REQUEST
+                )
+
+            RecipeShoppingCart.objects.create(
+                recipe=recipe,
+                user=user,
+            )
+            serializer = RecipeShortSerializer(recipe)
+            return Response(
+                serializer.data,
+                status=HTTP_201_CREATED
+            )
+
+        if request.method == 'DELETE':
+            if not recipe_shopping_cart.exists():
+                return Response(
+                    status=HTTP_400_BAD_REQUEST
+                )
+
+            recipe_shopping_cart.delete()
+            return Response(
+                status=HTTP_204_NO_CONTENT
+            )
 
     @action(
         detail=True,
@@ -89,4 +85,37 @@ class RecipeViewSet(ModelViewSet, RecipeMixin):
         permission_classes=[IsAuthenticated]
     )
     def favorite(self, request, pk=None):
-        self.custom_action(request, RecipeFavorite, pk)
+        recipe = get_object_or_404(Recipe, pk=pk)
+        user = self.request.user
+
+        recipe_favorite = RecipeFavorite.objects.filter(
+            recipe=recipe,
+            user=user,
+        )
+
+        if request.method == 'POST':
+            if recipe_favorite.exists():
+                return Response(
+                    status=HTTP_400_BAD_REQUEST
+                )
+
+            RecipeFavorite.objects.create(
+                recipe=recipe,
+                user=user,
+            )
+            serializer = RecipeShortSerializer(recipe)
+            return Response(
+                serializer.data,
+                status=HTTP_201_CREATED
+            )
+
+        if request.method == 'DELETE':
+            if not recipe_favorite.exists():
+                return Response(
+                    status=HTTP_400_BAD_REQUEST
+                )
+
+            recipe_favorite.delete()
+            return Response(
+                status=HTTP_204_NO_CONTENT
+            )
