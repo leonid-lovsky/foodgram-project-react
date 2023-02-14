@@ -103,3 +103,11 @@ class RecipeViewSet(ModelViewSet):
             return Response(
                 status=HTTP_204_NO_CONTENT
             )
+
+    @action(
+        detail=False,
+        url_path='download_shopping_cart',
+        permission_classes=[IsAuthenticated]
+    )
+    def download_shopping_cart(self, request, pk=None):
+        pass
