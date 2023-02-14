@@ -36,7 +36,7 @@ class RecipeSerializer(ModelSerializer):
         user = self.request.user
         # request = self.context.get('request')
         # user = request.user
-        if user and user.is_authenticated:
+        if user.is_authenticated:
             return RecipeFavorite.objects.filter(
                 recipe=obj,
                 user=user
@@ -47,7 +47,7 @@ class RecipeSerializer(ModelSerializer):
         user = self.request.user
         # request = self.context.get('request')
         # user = request.user
-        if user and user.is_authenticated:
+        if user.is_authenticated:
             return RecipeShoppingCart.objects.filter(
                 recipe=obj,
                 user=user

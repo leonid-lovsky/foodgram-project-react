@@ -31,7 +31,7 @@ class RecipeFilter(FilterSet):
 
     def get_is_favorited(self, queryset, field_name, value):
         user = self.request.user
-        if user and user.is_authenticated:
+        if user.is_authenticated:
             # favorites_ids = (
             #     RecipeFavorite.objects.filter(user=user)
             #     .values('recipe_id')
@@ -44,7 +44,7 @@ class RecipeFilter(FilterSet):
 
     def get_is_in_shopping_cart(self, queryset, field_name, value):
         user = self.request.user
-        if user and user.is_authenticated:
+        if user.is_authenticated:
             # recipes_in_shopping_cart_ids = (
             #     RecipeShoppingCart.objects.filter(user=user)
             #     .values('recipe_id')

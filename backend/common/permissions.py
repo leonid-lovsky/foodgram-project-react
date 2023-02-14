@@ -1,18 +1,38 @@
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated, BasePermission
 
 
-class IsAdminOrReadOnly(BasePermission):
+class ReadOnly(BasePermission):
     def has_permission(self, request, view):
         if request.method in SAFE_METHODS:
             return True
 
-        return bool(request.user and request.user.is_staff)
+        return False
 
     def has_object_permission(self, request, view):
         if request.method in SAFE_METHODS:
             return True
 
-        return bool(request.user and request.user.is_staff)
+        return False
+
+
+class IsAdminOrReadOnly(BasePermission):
+    def has_permission(self, request, view):
+        if request.method in SAFE_METHODS:
+            return True
+
+        if request.user.is_staff:
+            return True
+
+        return False
+
+    def has_object_permission(self, request, view):
+        if request.method in SAFE_METHODS:
+            return True
+
+        if request.user.is_staff:
+            return True
+
+        return False
 
 
 class IsAuthorOrReadOnly(BasePermission):
@@ -20,10 +40,13 @@ class IsAuthorOrReadOnly(BasePermission):
         if request.method in SAFE_METHODS:
             return True
 
-        return bool(request.user and request.user.is_authenticated)
+        return False
 
     def has_object_permission(self, request, view, obj):
         if request.method in SAFE_METHODS:
             return True
 
-        return obj.author == request.user
+        if obj.author == request.user:
+            return True
+
+        return False
