@@ -28,15 +28,9 @@ class CustomUserViewSet(UserViewSet):
         permission_classes=[IsAuthenticated],
     )
     def subscriptions(self, request, pk=None):
-        user = request.user
-        following = self.get_queryset().filter(
-            follow__user=user
-        )
+        following = self.get_queryset().filter(follow__user=request.user)
         serializer = AuthorWithRecipesSerializer(following)
-        return Response(
-            serializer.data,
-            status=HTTP_200_OK
-        )
+        return Response(serializer.data, status=HTTP_200_OK)
 
     @action(
         detail=True,
@@ -46,26 +40,12 @@ class CustomUserViewSet(UserViewSet):
     )
     def subscribe(self, request, pk=None):
         author = get_object_or_404(User, pk=pk)
-        user = request.user
-
-        subscription = Subscription.objects.filter(
-            author=author,
-            user=user,
-        )
-
         if request.method == 'POST':
-            Subscription.objects.create(
-                author=author,
-                user=user,
-            )
+            Subscription.objects.create(author=author, user=request.user)
             serializer = AuthorWithRecipesSerializer(author)
-            return Response(
-                serializer.data,
-                status=HTTP_201_CREATED
-            )
-
+            return Response(serializer.data, status=HTTP_201_CREATED)
         if request.method == 'DELETE':
-            subscription.delete()
-            return Response(
-                status=HTTP_204_NO_CONTENT
-            )
+            Subscription.objects.filter(
+                author=author, user=request.user
+            ).delete()
+            return Response(status=HTTP_204_NO_CONTENT)
