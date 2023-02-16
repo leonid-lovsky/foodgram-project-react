@@ -4,6 +4,6 @@ from django.utils.translation import gettext_lazy as _
 
 class TagsConfig(AppConfig):
     name = 'tags'
-    verbose_name = _('теги')
+    verbose_name = _('Теги')
 
 

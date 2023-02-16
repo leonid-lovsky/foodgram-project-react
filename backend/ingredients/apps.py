@@ -4,6 +4,6 @@ from django.utils.translation import gettext_lazy as _
 
 class IngredientsConfig(AppConfig):
     name = 'ingredients'
-    verbose_name = _('ингредиенты')
+    verbose_name = _('Ингредиенты')
 
 

@@ -16,6 +16,7 @@ class Recipe(Model):
     author = ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=CASCADE,
+        verbose_name=_('автор'),
     )
     name = CharField(
         _('название'),
@@ -48,8 +49,8 @@ class Recipe(Model):
     )
 
     class Meta:
-        verbose_name = _('рецепт')
-        verbose_name_plural = _('ингредиенты')
+        verbose_name = _('Рецепт')
+        verbose_name_plural = _('Рецепты')
         ordering = ['-pub_date']
 
 

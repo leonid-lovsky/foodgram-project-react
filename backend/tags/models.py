@@ -29,5 +29,5 @@ class Tag(Model):
     )
 
     class Meta:
-        verbose_name = _('тег')
-        verbose_name_plural = _('тег')
+        verbose_name = _('Тег')
+        verbose_name_plural = _('Тег')

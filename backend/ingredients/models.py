@@ -15,8 +15,8 @@ class Ingredient(Model):
     )
 
     class Meta:
-        verbose_name = _('ингредиент')
-        verbose_name_plural = _('ингредиенты')
+        verbose_name = _('Ингредиент')
+        verbose_name_plural = _('Ингредиенты')
         constraints = [
             UniqueConstraint(
                 fields=['name', 'measurement_unit'],
