@@ -36,7 +36,7 @@ class Recipe(Model):
     tags = ManyToManyField(
         Tag,
         through='RecipeTag',
-        verbose_name = _('Теги'),
+        verbose_name=_('Теги'),
     )
     cooking_time = IntegerField(
         _('Время приготовления'),
@@ -75,12 +75,17 @@ class RecipeIngredient(Model):
     )
 
     class Meta:
+        verbose_name = _('Ингредиент')
+        verbose_name_plural = _('Ингредиенты')
         constraints = [
             UniqueConstraint(
                 fields=['recipe', 'ingredient'],
                 name='%(app_label)s_%(class)s_unique_relationships'
             ),
         ]
+
+    def __str__(self):
+        return f'{self.ingredient} {self.amount}'
 
 
 class RecipeTag(Model):
@@ -94,12 +99,17 @@ class RecipeTag(Model):
     )
 
     class Meta:
+        verbose_name = _('Тег')
+        verbose_name_plural = _('Теги')
         constraints = [
             UniqueConstraint(
                 fields=['recipe', 'tag'],
                 name='%(app_label)s_%(class)s_unique_relationships'
             ),
         ]
+
+    def __str__(self):
+        return f'{self.tag}'
 
 
 class RecipeShoppingCart(Model):
@@ -113,12 +123,17 @@ class RecipeShoppingCart(Model):
     )
 
     class Meta:
+        verbose_name = _('Корзина')
+        verbose_name_plural = _('Корзины')
         constraints = [
             UniqueConstraint(
                 fields=['recipe', 'user'],
                 name='%(app_label)s_%(class)s_unique_relationships'
             ),
         ]
+
+    def __str__(self):
+        return f'{self.user}'
 
 
 class RecipeFavorite(Model):
@@ -132,9 +147,14 @@ class RecipeFavorite(Model):
     )
 
     class Meta:
+        verbose_name = _('Избранное')
+        verbose_name_plural = _('Избранные')
         constraints = [
             UniqueConstraint(
                 fields=['recipe', 'user'],
                 name='%(app_label)s_%(class)s_unique_relationships'
             ),
         ]
+
+    def __str__(self):
+        return f'{self.user}'

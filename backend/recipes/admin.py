@@ -1,32 +1,40 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
-from .models import Recipe
+from .models import Recipe, RecipeIngredient, RecipeTag
+
+
+class IngredientInline(admin.TabularInline):
+    model = RecipeIngredient
+    extra = 1
+
+
+class TagInline(admin.TabularInline):
+    model = RecipeTag
+    extra = 1
 
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     list_display = ['name', 'author', 'cooking_time',
-                    'get_ingredients', 'get_favorites', 'get_shopping_carts']
+                    'get_ingredient_count', 'get_favorite_count',
+                    'get_shopping_cart_count']
     search_fields = ['author', 'name']
     list_filter = ['tags']
-    # TODO: inline models
-    filter_horizontal = ['tags']
-    # filter_horizontal = ['ingredients']
-    # inlines = ['TagInline']
-    # inlines = ['IngredientInline']
 
-    def get_ingredients(self, obj):
+    inlines = [IngredientInline, TagInline]
+
+    def get_ingredient_count(self, obj):
         return obj.recipeingredient_set.count()
 
-    get_ingredients.short_description = _('Ингредиентов')
+    get_ingredient_count.short_description = _('Ингредиентов')
 
-    def get_favorites(self, obj):
+    def get_favorite_count(self, obj):
         return obj.recipefavorite_set.count()
 
-    get_favorites.short_description = _('В избранном')
+    get_favorite_count.short_description = _('В избранном')
 
-    def get_shopping_carts(self, obj):
+    def get_shopping_cart_count(self, obj):
         return obj.recipeshoppingcart_set.count()
 
-    get_shopping_carts.short_description = _('В корзине')
+    get_shopping_cart_count.short_description = _('В корзине')
