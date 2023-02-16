@@ -31,10 +31,12 @@ class Recipe(Model):
     ingredients = ManyToManyField(
         Ingredient,
         through='RecipeIngredient',
+        verbose_name=_('Ингредиенты'),
     )
     tags = ManyToManyField(
         Tag,
         through='RecipeTag',
+        verbose_name = _('Теги'),
     )
     cooking_time = IntegerField(
         _('Время приготовления'),

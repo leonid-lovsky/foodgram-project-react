@@ -9,7 +9,6 @@ class RecipeAdmin(admin.ModelAdmin):
     list_display = ['name', 'author', 'cooking_time',
                     'get_ingredients', 'get_favorites', 'get_shopping_carts']
     search_fields = ['author', 'name']
-    # TODO: list filter name
     list_filter = ['tags']
     # TODO: inline models
     filter_horizontal = ['tags']
@@ -22,7 +21,6 @@ class RecipeAdmin(admin.ModelAdmin):
 
     get_ingredients.short_description = _('Ингредиентов')
 
-
     def get_favorites(self, obj):
         return obj.recipefavorite_set.count()
 
@@ -32,5 +30,3 @@ class RecipeAdmin(admin.ModelAdmin):
         return obj.recipeshoppingcart_set.count()
 
     get_shopping_carts.short_description = _('В корзине')
-
-
