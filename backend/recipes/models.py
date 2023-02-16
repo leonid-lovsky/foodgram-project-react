@@ -48,6 +48,8 @@ class Recipe(Model):
     )
 
     class Meta:
+        verbose_name = _('рецепт')
+        verbose_name_plural = _('ингредиенты')
         ordering = ['-pub_date']
 
 

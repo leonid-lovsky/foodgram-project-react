@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
@@ -67,4 +69,5 @@ class RecipeViewSet(ModelViewSet):
         permission_classes=[IsAuthenticated]
     )
     def download_shopping_cart(self, request):
-        RecipeShoppingCart.objects.filter(user=request.user)
+        # shopping_cart = RecipeShoppingCart.objects.filter(user=request.user).values('recipe')
+        shopping_list = defaultdict(int)

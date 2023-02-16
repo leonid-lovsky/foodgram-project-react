@@ -27,3 +27,7 @@ class Tag(Model):
         max_length=200,
         unique=True,
     )
+
+    class Meta:
+        verbose_name = _('тег')
+        verbose_name_plural = _('тег')
