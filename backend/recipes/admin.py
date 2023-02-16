@@ -1,7 +1,9 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
-from .models import Recipe, RecipeIngredient, RecipeTag
+from .models import (
+    Recipe, RecipeFavorite, RecipeIngredient, RecipeShoppingCart, RecipeTag
+)
 
 
 class IngredientInline(admin.TabularInline):
@@ -14,15 +16,25 @@ class TagInline(admin.TabularInline):
     extra = 1
 
 
+class ShoppingCartInline(admin.TabularInline):
+    model = RecipeFavorite
+    extra = 1
+
+
+class FavoriteInline(admin.TabularInline):
+    model = RecipeShoppingCart
+    extra = 1
+
+
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     list_display = ['name', 'author', 'cooking_time',
-                    'get_ingredient_count', 'get_favorite_count',
-                    'get_shopping_cart_count']
+                    'get_ingredient_count', 'get_shopping_cart_count',
+                    'get_favorite_count']
     search_fields = ['author', 'name']
     list_filter = ['tags']
 
-    inlines = [IngredientInline, TagInline]
+    inlines = [IngredientInline, TagInline, ShoppingCartInline, FavoriteInline]
 
     def get_ingredient_count(self, obj):
         return obj.recipeingredient_set.count()
