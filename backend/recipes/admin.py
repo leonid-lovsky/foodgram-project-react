@@ -41,12 +41,12 @@ class RecipeAdmin(admin.ModelAdmin):
 
     get_ingredient_count.short_description = _('Ингредиентов')
 
-    def get_favorite_count(self, obj):
-        return obj.recipefavorite_set.count()
-
-    get_favorite_count.short_description = _('В избранном')
-
     def get_shopping_cart_count(self, obj):
         return obj.recipeshoppingcart_set.count()
 
     get_shopping_cart_count.short_description = _('В корзине')
+
+    def get_favorite_count(self, obj):
+        return obj.recipefavorite_set.count()
+
+    get_favorite_count.short_description = _('В избранном')
