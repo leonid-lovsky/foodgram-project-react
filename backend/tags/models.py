@@ -10,24 +10,26 @@ COLOR_VALIDATOR = RegexValidator(
 
 class Tag(Model):
     name = CharField(
-        _('название'),
+        _('Название'),
         max_length=200,
         unique=True,
     )
     color = CharField(
-        _('цвет'),
+        _('Цвет'),
         max_length=7,
-        validators=[
-            COLOR_VALIDATOR,
-        ],
+        validators=[COLOR_VALIDATOR],
         unique=True,
     )
     slug = SlugField(
-        _('slug'),
+        _('Slug'),
         max_length=200,
         unique=True,
     )
 
     class Meta:
         verbose_name = _('Тег')
-        verbose_name_plural = _('Тег')
+        verbose_name_plural = _('Теги')
+        ordering = ['name']
+
+    def __str__(self):
+        return f'{self.name}'

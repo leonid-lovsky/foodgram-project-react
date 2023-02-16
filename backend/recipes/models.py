@@ -5,7 +5,6 @@ from django.db.models import (
     CASCADE, RESTRICT, CharField, DateTimeField, ForeignKey, ImageField,
     IntegerField, ManyToManyField, Model, TextField, UniqueConstraint
 )
-from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from ingredients.models import Ingredient
@@ -16,18 +15,18 @@ class Recipe(Model):
     author = ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=CASCADE,
-        verbose_name=_('автор'),
+        verbose_name=_('Автор'),
     )
     name = CharField(
-        _('название'),
+        _('Название'),
         max_length=200,
     )
     image = ImageField(
-        _('картинка'),
+        _('Картинка'),
         upload_to='recipes/images',
     )
     text = TextField(
-        _('описание'),
+        _('Описание'),
     )
     ingredients = ManyToManyField(
         Ingredient,
@@ -38,13 +37,13 @@ class Recipe(Model):
         through='RecipeTag',
     )
     cooking_time = IntegerField(
-        _('время приготовления'),
+        _('Время приготовления'),
         validators=[
             MinValueValidator(1),
         ],
     )
     pub_date = DateTimeField(
-        _('дата публикации'),
+        _('Дата публикации'),
         auto_now_add=True,
     )
 
@@ -52,6 +51,9 @@ class Recipe(Model):
         verbose_name = _('Рецепт')
         verbose_name_plural = _('Рецепты')
         ordering = ['-pub_date']
+
+    def __str__(self):
+        return f'{self.name}'
 
 
 class RecipeIngredient(Model):
@@ -64,7 +66,7 @@ class RecipeIngredient(Model):
         on_delete=RESTRICT,
     )
     amount = IntegerField(
-        _('количество'),
+        _('Количество'),
         validators=[
             MinValueValidator(1),
         ],

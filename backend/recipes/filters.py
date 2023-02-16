@@ -13,11 +13,11 @@ User = get_user_model()
 
 class RecipeFilter(FilterSet):
     is_favorited = BooleanFilter(
-        label=_('Is favorited'),
+        label=_('В избранном'),
         method='get_is_favorited',
     )
     is_in_shopping_cart = BooleanFilter(
-        label=_('Is in shopping cart'),
+        label=_('В корзине'),
         method='get_is_in_shopping_cart',
     )
     author = ModelChoiceFilter(
