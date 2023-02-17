@@ -1,4 +1,5 @@
 from collections import defaultdict
+from django.http import HttpResponse
 
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
@@ -85,3 +86,12 @@ class RecipeViewSet(ModelViewSet):
                         recipe_ingredient.ingredient.measurement_unit,
                     )
                 ] += recipe_ingredient.amount
+
+        output = 'Список покупок:\n'
+        for key, value in shopping_list.items():
+            output += f'{key[0]} {key[1]}: {value}\n'
+
+        file_name = 'shopping_list.txt'
+        response = HttpResponse(shopping_list, content_type='text/plain')
+        response['Content-Disposition'] = f'attachment; filename="{file_name}.txt"'
+        return response
