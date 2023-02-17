@@ -2,11 +2,10 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 from django_filters.rest_framework import (
     BooleanFilter, FilterSet, ModelChoiceFilter, ModelMultipleChoiceFilter,
-    NumberFilter
 )
 from tags.models import Tag
 
-from .models import Recipe, RecipeFavorite, RecipeShoppingCart
+from .models import Recipe
 
 User = get_user_model()
 
@@ -29,16 +28,16 @@ class RecipeFilter(FilterSet):
         label=_('Tags'),
     )
 
-    def get_is_favorited(self, queryset, field_name, value):
-        user = self.request.user
-        return queryset.filter(
-            recipefavorite__user=user
-        )
-
     def get_is_in_shopping_cart(self, queryset, field_name, value):
         user = self.request.user
         return queryset.filter(
             recipeshoppingcart__user=user
+        )
+
+    def get_is_favorited(self, queryset, field_name, value):
+        user = self.request.user
+        return queryset.filter(
+            recipefavorite__user=user
         )
 
     class Meta:
