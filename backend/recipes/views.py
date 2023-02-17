@@ -89,7 +89,7 @@ class RecipeViewSet(ModelViewSet):
 
         output = 'Список покупок:\n'
         for key, value in shopping_list.items():
-            output += f'{key[0]} {key[1]}: {value}\n'
+            output += f'* {key[0]} ({key[1]}) — {value}\n'
 
         file_name = 'shopping_list.txt'
         response = HttpResponse(shopping_list, content_type='text/plain')
