@@ -17,12 +17,12 @@ class TagInline(admin.TabularInline):
 
 
 class ShoppingCartInline(admin.TabularInline):
-    model = RecipeFavorite
+    model = RecipeShoppingCart
     extra = 1
 
 
 class FavoriteInline(admin.TabularInline):
-    model = RecipeShoppingCart
+    model = RecipeFavorite
     extra = 1
 
 

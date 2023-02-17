@@ -5,7 +5,7 @@ from .models import Tag
 
 
 @admin.register(Tag)
-class RecipeAdmin(admin.ModelAdmin):
+class TagAdmin(admin.ModelAdmin):
     list_display = ['name', 'color', 'slug', 'get_usage']
 
     def get_usage(self, obj):

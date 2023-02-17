@@ -12,7 +12,7 @@ from common.pagination import PageLimitPagination
 from common.permissions import IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly
 
 from .filters import RecipeFilter
-from .models import Recipe, RecipeFavorite, RecipeShoppingCart
+from .models import Recipe, RecipeFavorite, RecipeIngredient, RecipeShoppingCart
 from .serializers import RecipeSerializer, RecipeShortSerializer
 
 
@@ -55,8 +55,8 @@ class RecipeViewSet(ModelViewSet):
             self.delete_recipe(model, recipe, request.user)
 
     def custom_create_action(self, model, recipe, user):
-        item = model.objects.create(recipe=recipe, user=user)
-        serializer = RecipeShortSerializer(item)
+        recipe_user = model.objects.create(recipe=recipe, user=user)
+        serializer = RecipeShortSerializer(recipe_user)
         return Response(serializer.data, status=HTTP_201_CREATED)
 
     def custom_delete_action(self, model, recipe, user):
@@ -69,5 +69,19 @@ class RecipeViewSet(ModelViewSet):
         permission_classes=[IsAuthenticated]
     )
     def download_shopping_cart(self, request):
-        # shopping_cart = RecipeShoppingCart.objects.filter(user=request.user).values('recipe')
+        user = request.user
+        shopping_carts = RecipeShoppingCart.objects.filter(user=user).all()
         shopping_list = defaultdict(int)
+
+        for shopping_cart in shopping_carts:
+            recipe_ingredients = RecipeIngredient.objects.filter(
+                recipe=shopping_cart.recipe
+            ).all()
+
+            for recipe_ingredient in recipe_ingredients:
+                shopping_list[
+                    (
+                        recipe_ingredient.ingredient.name,
+                        recipe_ingredient.ingredient.measurement_unit,
+                    )
+                ] += recipe_ingredient.amount
