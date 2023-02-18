@@ -28,10 +28,12 @@ class CustomUserSerializer(UserSerializer):
 
     def get_is_subscribed(self, obj):
         request = self.context.get('request')
-        return Subscription.objects.filter(
-            user=request.user, author=obj
-        ).exists()
-
+        user = request.user
+        if user and user.is_authenticated:
+            return Subscription.objects.filter(
+                user=user, author=obj
+            ).exists()
+        return False
 
 class CustomUserCreateSerializer(UserCreateSerializer):
     class Meta:
@@ -72,9 +74,12 @@ class AuthorWithRecipesSerializer(ModelSerializer):
 
     def get_is_subscribed(self, obj):
         request = self.context.get('request')
-        return Subscription.objects.filter(
-            user=request.user, author=obj
-        ).exists()
+        user = request.user
+        if user and user.is_authenticated:
+            return Subscription.objects.filter(
+                user=user, author=obj
+            ).exists()
+        return False
 
     def get_recipes(self, obj):
         request = self.context.get('request')

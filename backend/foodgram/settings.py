@@ -11,6 +11,7 @@ DEBUG = True
 # TODO
 ALLOWED_HOSTS = ['*']
 
+# TODO
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -25,7 +26,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
-    'corsheaders',
+    # 'corsheaders',
     'django_filters',
     'crispy_forms',
 ]
@@ -33,7 +34,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
+    # 'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -108,7 +109,7 @@ AUTH_USER_MODEL = 'users.User'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'common.permissions.ReadOnly',
@@ -122,11 +123,8 @@ DJOSER = {
         'current_user': 'users.serializers.CustomUserSerializer',
     },
     'PERMISSIONS': {
-        'user_create': [
-            'rest_framework.permissions.AllowAny',
-        ],
         'user': [
-            'rest_framework.permissions.IsAuthenticated',
+            'djoser.permissions.CurrentUserOrAdminOrReadOnly',
         ],
         'user_list': [
             'rest_framework.permissions.AllowAny',
@@ -135,7 +133,11 @@ DJOSER = {
     'HIDE_USERS': False,
 }
 
-CORS_ALLOW_ALL_ORIGINS = True
-CORS_URLS_REGEX = r'^/api/.*$'
+# CORS_ALLOWED_ORIGINS = [
+#     'http://localhost:8080',
+# ]
 
-LOGIN_REDIRECT_URL = '/accounts/profile/'
+# CORS_URLS_REGEX = r'^/api/.*$'
+# CORS_ALLOW_CREDENTIALS = True
+
+# LOGIN_REDIRECT_URL = '/accounts/profile/'
