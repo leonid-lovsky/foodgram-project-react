@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 from django_filters import rest_framework as filters
 
-from recipes import models as recipe_models
+from recipes.models import *
 
 User = get_user_model()
 
@@ -20,7 +20,7 @@ class RecipeFilter(filters.FilterSet):
         queryset=User.objects.all(),
     )
     tags = filters.ModelMultipleChoiceFilter(
-        queryset=recipe_models.Tag.objects.all(),
+        queryset=Tag.objects.all(),
         field_name='tags__slug',
         label=_('Tags'),
     )
@@ -38,7 +38,7 @@ class RecipeFilter(filters.FilterSet):
         )
 
     class Meta:
-        model = recipe_models.Recipe
+        model = Recipe
         fields = [
             'is_favorited',
             'is_in_shopping_cart',

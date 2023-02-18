@@ -3,7 +3,7 @@ from djoser import serializers as djoser_serializers
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from recipes import models as recipe_models
+from recipes.models import *
 
 User = get_user_model()
 
@@ -28,7 +28,7 @@ class UserSerializer(djoser_serializers.UserSerializer):
         request = self.context.get('request')
         user = request.user
         if user and user.is_authenticated:
-            return recipe_models.Subscription.objects.filter(
+            return Subscription.objects.filter(
                 user=user, author=obj
             ).exists()
         return False
@@ -49,7 +49,7 @@ class UserCreateSerializer(djoser_serializers.UserCreateSerializer):
 
 class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
-        model = recipe_models.Ingredient
+        model = Ingredient
         fields = [
             'id',
             'name',
@@ -64,7 +64,7 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
         source='ingredient.measurement_unit')
 
     class Meta:
-        model = recipe_models.RecipeIngredient
+        model = RecipeIngredient
         fields = [
             'id',
             'name',
@@ -75,7 +75,7 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
-        model = recipe_models.Tag
+        model = Tag
         fields = [
             'id',
             'name',
@@ -103,7 +103,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        model = recipe_models.Recipe
+        model = Recipe
         fields = [
             'id',
             'tags',
@@ -124,7 +124,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         user = request.user
         if user and user.is_authenticated:
-            return recipe_models.RecipeShoppingCart.objects.filter(
+            return RecipeShoppingCart.objects.filter(
                 recipe=obj, user=user
             ).exists()
         return False
@@ -133,7 +133,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         user = request.user
         if user and user.is_authenticated:
-            return recipe_models.RecipeFavorite.objects.filter(
+            return RecipeFavorite.objects.filter(
                 recipe=obj, user=user
             ).exists()
         return False
@@ -143,7 +143,7 @@ class RecipeShortSerializer(serializers.ModelSerializer):
     image = Base64ImageField()
 
     class Meta:
-        model = recipe_models.Recipe
+        model = Recipe
         fields = [
             'id',
             'name',
@@ -180,7 +180,7 @@ class AuthorWithRecipesSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         user = request.user
         if user and user.is_authenticated:
-            return recipe_models.Subscription.objects.filter(
+            return Subscription.objects.filter(
                 user=user, author=obj
             ).exists()
         return False
@@ -188,10 +188,10 @@ class AuthorWithRecipesSerializer(serializers.ModelSerializer):
     def get_recipes(self, obj):
         request = self.context.get('request')
         limit = request.GET.get('recipes_limit')
-        queryset = recipe_models.Recipe.objects.filter(author=obj)
+        queryset = Recipe.objects.filter(author=obj)
         if limit:
             queryset = queryset[:int(limit)]
         return RecipeShortSerializer(queryset, many=True).data
 
     def get_recipes_count(self, obj):
-        return recipe_models.Recipe.objects.filter(author=obj).count()
+        return Recipe.objects.filter(author=obj).count()
