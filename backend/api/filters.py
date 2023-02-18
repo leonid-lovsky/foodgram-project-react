@@ -1,11 +1,11 @@
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 from django_filters.rest_framework import (
-    BooleanFilter, FilterSet, ModelChoiceFilter, ModelMultipleChoiceFilter,
+    BooleanFilter, FilterSet, ModelChoiceFilter, ModelMultipleChoiceFilter
 )
-from tags.models import Tag
 
-from .models import Recipe
+from recipes.models import Recipe
+from tags.models import Tag
 
 User = get_user_model()
 

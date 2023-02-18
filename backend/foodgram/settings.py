@@ -19,10 +19,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'users',
-    'tags',
-    'recipes',
+    'api',
     'ingredients',
+    'recipes',
+    'tags',
+    'users',
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
@@ -112,15 +113,15 @@ REST_FRAMEWORK = {
         # 'rest_framework.authentication.SessionAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'common.permissions.ReadOnly',
+        'api.permissions.ReadOnly',
     ],
 }
 
 DJOSER = {
     'SERIALIZERS': {
-        'user_create': 'users.serializers.CustomUserCreateSerializer',
-        'user': 'users.serializers.CustomUserSerializer',
-        'current_user': 'users.serializers.CustomUserSerializer',
+        'user_create': 'api.serializers.CustomUserCreateSerializer',
+        'user': 'api.serializers.CustomUserSerializer',
+        'current_user': 'api.serializers.CustomUserSerializer',
     },
     'PERMISSIONS': {
         'user': [

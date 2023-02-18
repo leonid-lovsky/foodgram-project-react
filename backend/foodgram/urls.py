@@ -4,16 +4,15 @@ from django.contrib import admin
 from django.urls import include, path
 from rest_framework import routers
 
-from ingredients.views import IngredientViewSet
-from recipes.views import RecipeViewSet
-from tags.views import TagViewSet
-from users.views import CustomUserViewSet
+from api.views import (
+    CustomUserViewSet, IngredientViewSet, RecipeViewSet, TagViewSet
+)
 
 router = routers.DefaultRouter()
-router.register(r'users', CustomUserViewSet)
-router.register(r'tags', TagViewSet)
-router.register(r'recipes', RecipeViewSet)
 router.register(r'ingredients', IngredientViewSet)
+router.register(r'recipes', RecipeViewSet)
+router.register(r'tags', TagViewSet)
+router.register(r'users', CustomUserViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
