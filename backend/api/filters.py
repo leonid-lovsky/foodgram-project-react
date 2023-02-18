@@ -1,29 +1,26 @@
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
-from django_filters.rest_framework import (
-    BooleanFilter, FilterSet, ModelChoiceFilter, ModelMultipleChoiceFilter
-)
+from django_filters import rest_framework as filters
 
-from recipes.models import Recipe
-from tags.models import Tag
+from recipes import models as recipe_models
 
 User = get_user_model()
 
 
-class RecipeFilter(FilterSet):
-    is_favorited = BooleanFilter(
+class RecipeFilter(filters.FilterSet):
+    is_favorited = filters.BooleanFilter(
         label=_('В избранном'),
         method='get_is_favorited',
     )
-    is_in_shopping_cart = BooleanFilter(
+    is_in_shopping_cart = filters.BooleanFilter(
         label=_('В корзине'),
         method='get_is_in_shopping_cart',
     )
-    author = ModelChoiceFilter(
+    author = filters.ModelChoiceFilter(
         queryset=User.objects.all(),
     )
-    tags = ModelMultipleChoiceFilter(
-        queryset=Tag.objects.all(),
+    tags = filters.ModelMultipleChoiceFilter(
+        queryset=recipe_models.Tag.objects.all(),
         field_name='tags__slug',
         label=_('Tags'),
     )
@@ -41,7 +38,7 @@ class RecipeFilter(FilterSet):
         )
 
     class Meta:
-        model = Recipe
+        model = recipe_models.Recipe
         fields = [
             'is_favorited',
             'is_in_shopping_cart',

@@ -1,37 +1,64 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
-from .models import (
-    Recipe, RecipeFavorite, RecipeIngredient, RecipeShoppingCart, RecipeTag
-)
+from . import models
+
+
+@admin.register(models.Ingredient)
+class IngredientAdmin(admin.ModelAdmin):
+    list_display = ['name', 'measurement_unit', 'get_usage']
+    search_fields = ['name']
+
+    def get_usage(self, obj):
+        return obj.recipe_set.count()
+
+    get_usage.short_description = _('Использований')
+
+
+@admin.register(models.Tag)
+class TagAdmin(admin.ModelAdmin):
+    list_display = ['name', 'color', 'slug', 'get_usage']
+
+    def get_usage(self, obj):
+        return obj.recipe_set.count()
+
+    get_usage.short_description = _('Использований')
 
 
 class IngredientInline(admin.TabularInline):
-    model = RecipeIngredient
+    model = models.RecipeIngredient
     extra = 1
 
 
 class TagInline(admin.TabularInline):
-    model = RecipeTag
+    model = models.RecipeTag
     extra = 1
 
 
 class ShoppingCartInline(admin.TabularInline):
-    model = RecipeShoppingCart
+    model = models.RecipeShoppingCart
     extra = 1
 
 
 class FavoriteInline(admin.TabularInline):
-    model = RecipeFavorite
+    model = models.RecipeFavorite
     extra = 1
 
 
-@admin.register(Recipe)
+@admin.register(models.Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ['name', 'author', 'cooking_time',
-                    'get_ingredient_count', 'get_shopping_cart_count',
-                    'get_favorite_count']
-    search_fields = ['author', 'name']
+    list_display = [
+        'name',
+        'author',
+        'cooking_time',
+        'get_ingredient_count',
+        'get_shopping_cart_count',
+        'get_favorite_count',
+    ]
+    search_fields = [
+        'author',
+        'name',
+    ]
     list_filter = ['tags']
 
     inlines = [IngredientInline, TagInline, ShoppingCartInline, FavoriteInline]
