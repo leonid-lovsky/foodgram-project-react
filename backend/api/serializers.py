@@ -111,13 +111,30 @@ class RecipeSerializer(serializers.ModelSerializer):
             'text',
             'cooking_time',
         ]
-        read_only_fields = ['author',]
 
     def create(self, validated_data):
-        print(validated_data)
         tags = self.initial_data.get('tags')
         ingredients = self.initial_data.get('ingredients')
-        recipe = Recipe.objects.create(**validated_data)
+        recipe = super().create(validated_data)
+        for tag in tags:
+            tag = TagRecipe.objects.create(
+                recipe=recipe,
+                tag_id=tag,
+            )
+        for ingredient in ingredients:
+            ingredient = IngredientRecipe.objects.create(
+                recipe=recipe,
+                ingredient_id=ingredient.get('id'),
+                amount=ingredient.get('amount'),
+            )
+        return recipe
+
+    def update(self, instance, validated_data):
+        tags = self.initial_data.get('tags')
+        ingredients = self.initial_data.get('ingredients')
+        recipe = super().update(instance, validated_data)
+        TagRecipe.objects.filter(recipe=recipe).delete()
+        IngredientRecipe.objects.filter(recipe=recipe).delete()
         for tag in tags:
             tag = TagRecipe.objects.create(
                 recipe=recipe,
