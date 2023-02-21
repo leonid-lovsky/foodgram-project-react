@@ -10,33 +10,6 @@ COLOR_VALIDATOR = RegexValidator(
 )
 
 
-class Ingredient(models.Model):
-    name = models.CharField(
-        _('Название'),
-        max_length=200,
-        blank=False,
-    )
-    measurement_unit = models.CharField(
-        _('Единицы измерения'),
-        max_length=200,
-        blank=False,
-    )
-
-    class Meta:
-        verbose_name = _('Ингредиент')
-        verbose_name_plural = _('Ингредиенты')
-        ordering = ['name']
-        constraints = [
-            models.UniqueConstraint(
-                fields=['name', 'measurement_unit'],
-                name='%(app_label)s_%(class)s_unique_relationships'
-            ),
-        ]
-
-    def __str__(self):
-        return f'{self.name} ({self.measurement_unit})'
-
-
 class Tag(models.Model):
     name = models.CharField(
         _('Название'),
@@ -64,29 +37,31 @@ class Tag(models.Model):
         return f'{self.name}'
 
 
-class Subscription(models.Model):
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        related_name='subscribing',
-        on_delete=models.CASCADE,
+class Ingredient(models.Model):
+    name = models.CharField(
+        _('Название'),
+        max_length=200,
+        blank=False,
     )
-    author = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        related_name='subscribers',
-        on_delete=models.CASCADE,
+    measurement_unit = models.CharField(
+        _('Единицы измерения'),
+        max_length=200,
+        blank=False,
     )
 
     class Meta:
+        verbose_name = _('Ингредиент')
+        verbose_name_plural = _('Ингредиенты')
+        ordering = ['name']
         constraints = [
             models.UniqueConstraint(
-                fields=['user', 'author'],
+                fields=['name', 'measurement_unit'],
                 name='%(app_label)s_%(class)s_unique_relationships'
             ),
         ]
 
-    def clean(self):
-        if self.user == self.author:
-            raise ValidationError(_('You can\'t subscribe to yourself!'))
+    def __str__(self):
+        return f'{self.name} ({self.measurement_unit})'
 
 
 class Recipe(models.Model):
@@ -109,12 +84,12 @@ class Recipe(models.Model):
     )
     ingredients = models.ManyToManyField(
         Ingredient,
-        through='RecipeIngredient',
+        through='IngredientRecipe',
         verbose_name=_('Ингредиенты'),
     )
     tags = models.ManyToManyField(
         Tag,
-        through='RecipeTag',
+        through='TagRecipe',
         verbose_name=_('Теги'),
     )
     cooking_time = models.IntegerField(
@@ -137,15 +112,37 @@ class Recipe(models.Model):
         return f'{self.name}'
 
 
+class TagRecipe(models.Model):
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+    )
+    tag = models.ForeignKey(
+        Tag,
+        on_delete=models.RESTRICT,
+    )
+
+    class Meta:
+        verbose_name = _('Тег')
+        verbose_name_plural = _('Теги')
+        constraints = [
+            models.UniqueConstraint(
+                fields=['recipe', 'tag'],
+                name='%(app_label)s_%(class)s_unique_relationships'
+            ),
+        ]
+
+    def __str__(self):
+        return f'{self.tag}'
+
+
 class IngredientRecipe(models.Model):
     recipe = models.ForeignKey(
         Recipe,
-        related_name='ingredients',
         on_delete=models.CASCADE,
     )
     ingredient = models.ForeignKey(
         Ingredient,
-        related_name='recipes',
         on_delete=models.RESTRICT,
     )
     amount = models.IntegerField(
@@ -169,41 +166,13 @@ class IngredientRecipe(models.Model):
         return f'{self.ingredient} {self.amount}'
 
 
-class TagRecipe(models.Model):
-    recipe = models.ForeignKey(
-        Recipe,
-        related_name='tags',
-        on_delete=models.CASCADE,
-    )
-    tag = models.ForeignKey(
-        Tag,
-        related_name='recipes',
-        on_delete=models.RESTRICT,
-    )
-
-    class Meta:
-        verbose_name = _('Тег')
-        verbose_name_plural = _('Теги')
-        constraints = [
-            models.UniqueConstraint(
-                fields=['recipe', 'tag'],
-                name='%(app_label)s_%(class)s_unique_relationships'
-            ),
-        ]
-
-    def __str__(self):
-        return f'{self.tag}'
-
-
 class ShoppingCartRecipe(models.Model):
     recipe = models.ForeignKey(
         Recipe,
-        related_name='in_shopping_carts',
         on_delete=models.CASCADE,
     )
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        related_name='shopping_cart',
         on_delete=models.CASCADE,
     )
 
@@ -224,12 +193,10 @@ class ShoppingCartRecipe(models.Model):
 class FavoriteRecipe(models.Model):
     recipe = models.ForeignKey(
         Recipe,
-        related_name='in_favorites',
         on_delete=models.CASCADE,
     )
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        related_name='favorties',
         on_delete=models.CASCADE,
     )
 
@@ -245,3 +212,28 @@ class FavoriteRecipe(models.Model):
 
     def __str__(self):
         return f'{self.user}'
+
+
+class Subscription(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='subscribing',
+        on_delete=models.CASCADE,
+    )
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='subscribers',
+        on_delete=models.CASCADE,
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'author'],
+                name='%(app_label)s_%(class)s_unique_relationships'
+            ),
+        ]
+
+    def clean(self):
+        if self.user == self.author:
+            raise ValidationError(_('You can\'t subscribe to yourself!'))
