@@ -31,7 +31,7 @@ class UserViewSet(djoser_views.UserViewSet):
     )
     def subscriptions(self, request, pk=None):
         following = self.get_queryset().filter(follow__user=request.user)
-        serializer = AuthorWithRecipesSerializer(following)
+        serializer = UserWithRecipesSerializer(following)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(
@@ -46,7 +46,7 @@ class UserViewSet(djoser_views.UserViewSet):
             Subscription.objects.create(
                 author=author, user=request.user
             )
-            serializer = AuthorWithRecipesSerializer(author)
+            serializer = UserWithRecipesSerializer(author)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         if request.method == 'DELETE':
             Subscription.objects.filter(
@@ -60,10 +60,9 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = TagSerializer
 
 
-
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
-    serializer_class = RecipeSerializer
+    # serializer_class = RecipeSerializer
     permission_classes = [
         permissions.IsAuthenticatedOrReadOnly,
         IsAuthorOrReadOnly,
@@ -73,6 +72,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_class = RecipeFilter
 
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return RecipeSerializer
+        return RecipeCreateSerializer
+
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
@@ -80,39 +84,41 @@ class RecipeViewSet(viewsets.ModelViewSet):
         detail=True,
         methods=['post', 'delete'],
         url_path='shopping_cart',
-        permission_classes=[permissions.IsAuthenticated]
+        permission_classes=[IsAuthenticated]
     )
     def shopping_cart(self, request, pk=None):
-        self.new_create_or_delete(
-            ShoppingCartRecipe, request, pk
-        )
+        recipe = get_object_or_404(Recipe, pk=pk)
+        if request.method == 'POST':
+            recipe_user = ShoppingCartRecipe.objects.create(
+                recipe=recipe, user=request.user
+            )
+            serializer = ShortRecipeSerializer(recipe_user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if request.method == 'DELETE':
+            ShoppingCartRecipe.objects.filter(
+                recipe=recipe, user=request.user
+            ).delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
         detail=True,
         methods=['post', 'delete'],
         url_path='favorite',
-        permission_classes=[permissions.IsAuthenticated]
+        permission_classes=[IsAuthenticated]
     )
     def favorite(self, request, pk=None):
-        self.new_create_or_delete(
-            FavoriteRecipe, request, pk
-        )
-
-    def custom_create_or_delete_action(self, model, request, pk):
         recipe = get_object_or_404(Recipe, pk=pk)
         if request.method == 'POST':
-            self.create_recipe(model, recipe, request.user)
+            recipe_user = FavoriteRecipe.objects.create(
+                recipe=recipe, user=request.user
+            )
+            serializer = ShortRecipeSerializer(recipe_user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         if request.method == 'DELETE':
-            self.delete_recipe(model, recipe, request.user)
-
-    def custom_create_action(self, model, recipe, user):
-        recipe_user = model.objects.create(recipe=recipe, user=user)
-        serializer = RecipeShortSerializer(recipe_user)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    def custom_delete_action(self, model, recipe, user):
-        model.objects.filter(recipe=recipe, user=user).delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+            FavoriteRecipe.objects.filter(
+                recipe=recipe, user=request.user
+            ).delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
         detail=False,

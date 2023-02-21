@@ -1,10 +1,10 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
-from . import models
+from recipes.models import *
 
 
-@admin.register(models.Ingredient)
+@admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
     list_display = ['name', 'measurement_unit', 'get_usage']
     search_fields = ['name']
@@ -15,7 +15,7 @@ class IngredientAdmin(admin.ModelAdmin):
     get_usage.short_description = _('Использований')
 
 
-@admin.register(models.Tag)
+@admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
     list_display = ['name', 'color', 'slug', 'get_usage']
 
@@ -26,26 +26,26 @@ class TagAdmin(admin.ModelAdmin):
 
 
 class IngredientInline(admin.TabularInline):
-    model = models.IngredientRecipe
+    model = IngredientRecipe
     extra = 1
 
 
 class TagInline(admin.TabularInline):
-    model = models.TagRecipe
+    model = TagRecipe
     extra = 1
 
 
 class ShoppingCartInline(admin.TabularInline):
-    model = models.ShoppingCartRecipe
+    model = ShoppingCartRecipe
     extra = 1
 
 
 class FavoriteInline(admin.TabularInline):
-    model = models.FavoriteRecipe
+    model = FavoriteRecipe
     extra = 1
 
 
-@admin.register(models.Recipe)
+@admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     list_display = [
         'name',
@@ -64,16 +64,16 @@ class RecipeAdmin(admin.ModelAdmin):
     inlines = [IngredientInline, TagInline, ShoppingCartInline, FavoriteInline]
 
     def get_ingredient_count(self, obj):
-        return obj.recipeingredient_set.count()
+        return obj.ingredientrecipe_set.count()
 
     get_ingredient_count.short_description = _('Ингредиентов')
 
     def get_shopping_cart_count(self, obj):
-        return obj.recipeshoppingcart_set.count()
+        return obj.shoppingcartrecipe_set.count()
 
     get_shopping_cart_count.short_description = _('В корзине')
 
     def get_favorite_count(self, obj):
-        return obj.recipefavorite_set.count()
+        return obj.favoriterecipe_set.count()
 
     get_favorite_count.short_description = _('В избранном')
