@@ -20,14 +20,14 @@ from .serializers import *
 User = get_user_model()
 
 
-class CustomUserViewSet(djoser_views.UserViewSet):
+class UserViewSet(djoser_views.UserViewSet):
     pagination_class = PageLimitPagination
     pagination_class.page_size = 6
 
     @action(
         detail=False,
         url_path='subscriptions',
-        permission_classes=[permissions.IsAuthenticated],
+        permission_classes=[IsAuthenticated],
     )
     def subscriptions(self, request, pk=None):
         following = self.get_queryset().filter(follow__user=request.user)
@@ -44,7 +44,8 @@ class CustomUserViewSet(djoser_views.UserViewSet):
         author = get_object_or_404(User, pk=pk)
         if request.method == 'POST':
             Subscription.objects.create(
-                author=author, user=request.user)
+                author=author, user=request.user
+            )
             serializer = AuthorWithRecipesSerializer(author)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         if request.method == 'DELETE':
@@ -54,16 +55,10 @@ class CustomUserViewSet(djoser_views.UserViewSet):
             return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Ingredient.objects.all()
-    serializer_class = IngredientSerializer
-    filter_backends = [SearchFilter]
-    search_fields = ['name']
-
-
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -79,8 +74,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     filterset_class = RecipeFilter
 
     def perform_create(self, serializer):
-        user = self.request.user
-        serializer.save(author=user)
+        serializer.save(author=self.request.user)
 
     @action(
         detail=True,
@@ -90,7 +84,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def shopping_cart(self, request, pk=None):
         self.new_create_or_delete(
-            RecipeShoppingCart, request, pk
+            ShoppingCartRecipe, request, pk
         )
 
     @action(
@@ -101,7 +95,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def favorite(self, request, pk=None):
         self.new_create_or_delete(
-            RecipeFavorite, request, pk
+            FavoriteRecipe, request, pk
         )
 
     def custom_create_or_delete_action(self, model, request, pk):
@@ -127,13 +121,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def download_shopping_cart(self, request):
         user = request.user
-        shopping_carts = RecipeShoppingCart.objects.filter(
+        shopping_carts = ShoppingCartRecipe.objects.filter(
             user=user
         ).all()
         shopping_list = defaultdict(int)
 
         for shopping_cart in shopping_carts:
-            ingredients = RecipeIngredient.objects.filter(
+            ingredients = IngredientRecipe.objects.filter(
                 recipe=shopping_cart.recipe
             ).all()
 
@@ -155,3 +149,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
             f'attachment; filename="{file_name}.txt"'
         )
         return response
+
+
+class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Ingredient.objects.all()
+    serializer_class = IngredientSerializer
+    filter_backends = [SearchFilter]
+    search_fields = ['name']

@@ -26,22 +26,22 @@ class TagAdmin(admin.ModelAdmin):
 
 
 class IngredientInline(admin.TabularInline):
-    model = models.RecipeIngredient
+    model = models.IngredientRecipe
     extra = 1
 
 
 class TagInline(admin.TabularInline):
-    model = models.RecipeTag
+    model = models.TagRecipe
     extra = 1
 
 
 class ShoppingCartInline(admin.TabularInline):
-    model = models.RecipeShoppingCart
+    model = models.ShoppingCartRecipe
     extra = 1
 
 
 class FavoriteInline(admin.TabularInline):
-    model = models.RecipeFavorite
+    model = models.FavoriteRecipe
     extra = 1
 
 

@@ -10,31 +10,29 @@ User = get_user_model()
 class RecipeFilter(filters.FilterSet):
     is_favorited = filters.BooleanFilter(
         label=_('В избранном'),
-        method='get_is_favorited',
     )
     is_in_shopping_cart = filters.BooleanFilter(
         label=_('В корзине'),
-        method='get_is_in_shopping_cart',
     )
     author = filters.ModelChoiceFilter(
         queryset=User.objects.all(),
     )
     tags = filters.ModelMultipleChoiceFilter(
+        label=_('Tags'),
         queryset=Tag.objects.all(),
         field_name='tags__slug',
-        label=_('Tags'),
     )
 
     def get_is_in_shopping_cart(self, queryset, field_name, value):
         user = self.request.user
         return queryset.filter(
-            recipeshoppingcart__user=user
+            shoppingcartrecipe__user=user
         )
 
     def get_is_favorited(self, queryset, field_name, value):
         user = self.request.user
         return queryset.filter(
-            recipefavorite__user=user
+            favoriterecipe__user=user
         )
 
     class Meta:

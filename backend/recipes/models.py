@@ -67,13 +67,13 @@ class Tag(models.Model):
 class Subscription(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
+        related_name='subscribing',
         on_delete=models.CASCADE,
-        related_name='following',
     )
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
+        related_name='subscribers',
         on_delete=models.CASCADE,
-        related_name='followers',
     )
 
     class Meta:
@@ -92,6 +92,7 @@ class Subscription(models.Model):
 class Recipe(models.Model):
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
+        related_name='recipes',
         on_delete=models.CASCADE,
         verbose_name=_('Автор'),
     )
@@ -136,13 +137,15 @@ class Recipe(models.Model):
         return f'{self.name}'
 
 
-class RecipeIngredient(models.Model):
+class IngredientRecipe(models.Model):
     recipe = models.ForeignKey(
         Recipe,
+        related_name='ingredients',
         on_delete=models.CASCADE,
     )
     ingredient = models.ForeignKey(
         Ingredient,
+        related_name='recipes',
         on_delete=models.RESTRICT,
     )
     amount = models.IntegerField(
@@ -166,13 +169,15 @@ class RecipeIngredient(models.Model):
         return f'{self.ingredient} {self.amount}'
 
 
-class RecipeTag(models.Model):
+class TagRecipe(models.Model):
     recipe = models.ForeignKey(
         Recipe,
+        related_name='tags',
         on_delete=models.CASCADE,
     )
     tag = models.ForeignKey(
         Tag,
+        related_name='recipes',
         on_delete=models.RESTRICT,
     )
 
@@ -190,13 +195,15 @@ class RecipeTag(models.Model):
         return f'{self.tag}'
 
 
-class RecipeShoppingCart(models.Model):
+class ShoppingCartRecipe(models.Model):
     recipe = models.ForeignKey(
         Recipe,
+        related_name='in_shopping_carts',
         on_delete=models.CASCADE,
     )
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
+        related_name='shopping_cart',
         on_delete=models.CASCADE,
     )
 
@@ -214,13 +221,15 @@ class RecipeShoppingCart(models.Model):
         return f'{self.user}'
 
 
-class RecipeFavorite(models.Model):
+class FavoriteRecipe(models.Model):
     recipe = models.ForeignKey(
         Recipe,
+        related_name='in_favorites',
         on_delete=models.CASCADE,
     )
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
+        related_name='favorties',
         on_delete=models.CASCADE,
     )
 
