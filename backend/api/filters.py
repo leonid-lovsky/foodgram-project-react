@@ -18,21 +18,21 @@ class RecipeFilter(filters.FilterSet):
         queryset=User.objects.all(),
     )
     tags = filters.ModelMultipleChoiceFilter(
-        label=_('Tags'),
         queryset=Tag.objects.all(),
+        label=_('Tags'),
         field_name='tags__slug',
     )
-
-    def get_is_in_shopping_cart(self, queryset, field_name, value):
-        user = self.request.user
-        return queryset.filter(
-            shoppingcartrecipe__user=user
-        )
 
     def get_is_favorited(self, queryset, field_name, value):
         user = self.request.user
         return queryset.filter(
             favoriterecipe__user=user
+        )
+
+    def get_is_in_shopping_cart(self, queryset, field_name, value):
+        user = self.request.user
+        return queryset.filter(
+            shoppingcartrecipe__user=user
         )
 
     class Meta:

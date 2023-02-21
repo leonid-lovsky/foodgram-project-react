@@ -62,20 +62,15 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
-    # serializer_class = RecipeSerializer
+    serializer_class = RecipeSerializer
     permission_classes = [
-        permissions.IsAuthenticatedOrReadOnly,
+        IsAuthenticatedOrReadOnly,
         IsAuthorOrReadOnly,
     ]
     pagination_class = PageLimitPagination
     pagination_class.page_size = 6
     filter_backends = [DjangoFilterBackend]
     filterset_class = RecipeFilter
-
-    def get_serializer_class(self):
-        if self.request.method == 'GET':
-            return RecipeSerializer
-        return RecipeSerializer
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -123,7 +118,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(
         detail=False,
         url_path='download_shopping_cart',
-        permission_classes=[permissions.IsAuthenticated]
+        permission_classes=[IsAuthenticated]
     )
     def download_shopping_cart(self, request):
         user = request.user
