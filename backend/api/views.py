@@ -85,7 +85,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe = get_object_or_404(Recipe, pk=pk)
         if request.method == 'POST':
             try:
-                instance = ShoppingCartRecipe.objects.create(
+                instance = RecipeInShoppingCart.objects.create(
                     recipe=recipe, user=request.user
                 )
                 serializer = ShortRecipeSerializer(instance.recipe)
@@ -94,7 +94,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 return Response(status=status.HTTP_400_BAD_REQUEST)
         if request.method == 'DELETE':
             try:
-                instance = ShoppingCartRecipe.objects.get(
+                instance = RecipeInShoppingCart.objects.get(
                     recipe=recipe, user=request.user
                 )
                 instance.delete()
@@ -135,23 +135,23 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=[IsAuthenticated]
     )
     def download_shopping_cart(self, request):
-        shopping_carts = ShoppingCartRecipe.objects.filter(
+        recipes_in_shopping_cart = RecipeInShoppingCart.objects.filter(
             user=request.user
         ).all()
         shopping_list = defaultdict(int)
 
-        for shopping_cart in shopping_carts:
-            ingredients = IngredientRecipe.objects.filter(
-                recipe=shopping_cart.recipe
+        for recipe_in_shopping_cart in recipes_in_shopping_cart:
+            ingredients_in_recipe = IngredientInRecipe.objects.filter(
+                recipe=recipe_in_shopping_cart.recipe
             ).all()
 
-            for ingredient in ingredients:
+            for ingredient_in_recipe in ingredients_in_recipe:
                 shopping_list[
                     (
-                        ingredient.ingredient.name,
-                        ingredient.ingredient.measurement_unit,
+                        ingredient_in_recipe.ingredient.name,
+                        ingredient_in_recipe.ingredient.measurement_unit,
                     )
-                ] += ingredient.amount
+                ] += ingredient_in_recipe.amount
 
         output = 'Список покупок:\n'
         for key, value in shopping_list.items():

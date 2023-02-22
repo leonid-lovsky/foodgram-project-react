@@ -84,12 +84,12 @@ class Recipe(models.Model):
     )
     ingredients = models.ManyToManyField(
         Ingredient,
-        through='IngredientRecipe',
+        through='IngredientInRecipe',
         verbose_name=_('Ингредиенты'),
     )
     tags = models.ManyToManyField(
         Tag,
-        through='TagRecipe',
+        through='RecipeTag',
         verbose_name=_('Теги'),
     )
     cooking_time = models.IntegerField(
@@ -112,7 +112,7 @@ class Recipe(models.Model):
         return f'{self.name}'
 
 
-class TagRecipe(models.Model):
+class RecipeTag(models.Model):
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
@@ -136,7 +136,7 @@ class TagRecipe(models.Model):
         return f'{self.tag}'
 
 
-class IngredientRecipe(models.Model):
+class IngredientInRecipe(models.Model):
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
@@ -166,7 +166,7 @@ class IngredientRecipe(models.Model):
         return f'{self.ingredient} {self.amount}'
 
 
-class ShoppingCartRecipe(models.Model):
+class RecipeInShoppingCart(models.Model):
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,

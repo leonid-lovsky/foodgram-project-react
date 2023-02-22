@@ -80,7 +80,7 @@ class IngredientRecipeSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        model = IngredientRecipe
+        model = IngredientInRecipe
         fields = [
             'id',
             'name',
@@ -122,12 +122,12 @@ class RecipeSerializer(serializers.ModelSerializer):
         ingredients = self.initial_data.get('ingredients')
         instance = super().create(validated_data)
         for tag in tags:
-            tag = TagRecipe.objects.create(
+            tag = RecipeTag.objects.create(
                 recipe=instance,
                 tag_id=tag,
             )
         for ingredient in ingredients:
-            ingredient = IngredientRecipe.objects.create(
+            ingredient = IngredientInRecipe.objects.create(
                 recipe=instance,
                 ingredient_id=ingredient.get('id'),
                 amount=ingredient.get('amount'),
@@ -135,18 +135,18 @@ class RecipeSerializer(serializers.ModelSerializer):
         return instance
 
     def update(self, instance, validated_data):
-        TagRecipe.objects.filter(recipe=instance).delete()
-        IngredientRecipe.objects.filter(recipe=instance).delete()
+        RecipeTag.objects.filter(recipe=instance).delete()
+        IngredientInRecipe.objects.filter(recipe=instance).delete()
         tags = self.initial_data.get('tags')
         ingredients = self.initial_data.get('ingredients')
         instance = super().update(instance, validated_data)
         for tag in tags:
-            tag = TagRecipe.objects.create(
+            tag = RecipeTag.objects.create(
                 recipe=instance,
                 tag_id=tag,
             )
         for ingredient in ingredients:
-            ingredient = IngredientRecipe.objects.create(
+            ingredient = IngredientInRecipe.objects.create(
                 recipe=instance,
                 ingredient_id=ingredient.get('id'),
                 amount=ingredient.get('amount'),
@@ -156,7 +156,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     def get_is_in_shopping_cart(self, obj):
         request = self.context.get('request')
         if request.user and request.user.is_authenticated:
-            return ShoppingCartRecipe.objects.filter(
+            return RecipeInShoppingCart.objects.filter(
                 recipe=obj, user=request.user
             ).exists()
         return False
