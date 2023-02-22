@@ -232,8 +232,8 @@ class Subscription(models.Model):
                 fields=['user', 'author'],
                 name='%(app_label)s_%(class)s_unique_relationships'
             ),
+            models.CheckConstraint(
+                name='%(app_label)s_%(class)s_prevent_self_follow',
+                check=~models.Q(user=models.F('author')),
+            ),
         ]
-
-    def clean(self):
-        if self.user == self.author:
-            raise ValidationError(_('You can\'t subscribe to yourself!'))

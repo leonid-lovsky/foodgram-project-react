@@ -72,7 +72,7 @@ class TagSerializer(serializers.ModelSerializer):
         ]
 
 
-class IngredientRecipeSerializer(serializers.ModelSerializer):
+class IngredientInRecipeSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField(source='ingredient.id')
     name = serializers.ReadOnlyField(source='ingredient.name')
     measurement_unit = serializers.ReadOnlyField(
@@ -92,7 +92,7 @@ class IngredientRecipeSerializer(serializers.ModelSerializer):
 class RecipeSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True, read_only=True)
     author = UserSerializer(read_only=True)
-    ingredients = IngredientRecipeSerializer(
+    ingredients = IngredientInRecipeSerializer(
         source='ingredientrecipe_set',
         many=True, read_only=True,
     )

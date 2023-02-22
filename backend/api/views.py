@@ -29,9 +29,14 @@ class UserViewSet(djoser_views.UserViewSet):
         url_path='subscriptions',
         permission_classes=[IsAuthenticated],
     )
-    def subscriptions(self, request, pk=None):
-        following = self.get_queryset().filter(follow__user=request.user)
-        serializer = UserWithRecipesSerializer(following)
+    def subscriptions(self, request):
+        subscriptions = User.objects.filter(
+            subscribers__user=self.request.user
+        )
+        context = {'request': request}
+        serializer = UserWithRecipesSerializer(
+            subscriptions, many=True, context=context
+        )
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(
@@ -40,18 +45,28 @@ class UserViewSet(djoser_views.UserViewSet):
         url_path='subscribe',
         permission_classes=[IsAuthenticated]
     )
-    def subscribe(self, request, pk=None):
-        author = get_object_or_404(User, pk=pk)
+    def subscribe(self, request, id=None):
+        author = get_object_or_404(User, pk=id)
+        context = {'request': request}
         if request.method == 'POST':
-            Subscription.objects.create(
-                author=author, user=request.user
+            try:
+                instance = Subscription.objects.create(
+                    author=author, user=self.request.user
+                )
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            serializer = UserWithRecipesSerializer(
+                instance.author, context=context
             )
-            serializer = UserWithRecipesSerializer(author)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         if request.method == 'DELETE':
-            Subscription.objects.filter(
-                author=author, user=request.user
-            ).delete()
+            try:
+                instance = Subscription.objects.get(
+                    author=author, user=self.request.user
+                )
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            instance.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
 
@@ -82,7 +97,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def download_shopping_cart(self, request):
         recipes_in_shopping_cart = RecipeInShoppingCart.objects.filter(
-            user=request.user
+            user=self.request.user
         ).all()
         shopping_list = defaultdict(int)
 
@@ -121,21 +136,24 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if request.method == 'POST':
             try:
                 instance = RecipeInShoppingCart.objects.create(
-                    recipe=recipe, user=request.user
+                    recipe=recipe, user=self.request.user
                 )
-                serializer = ShortRecipeSerializer(instance.recipe)
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
             except:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
+            context = {'request': self.request}
+            serializer = ShortRecipeSerializer(
+                instance.recipe, context=context
+            )
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         if request.method == 'DELETE':
             try:
                 instance = RecipeInShoppingCart.objects.get(
-                    recipe=recipe, user=request.user
+                    recipe=recipe, user=self.request.user
                 )
-                instance.delete()
-                return Response(status=status.HTTP_204_NO_CONTENT)
             except:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
+            instance.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
         detail=True,
@@ -148,21 +166,24 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if request.method == 'POST':
             try:
                 instance = FavoriteRecipe.objects.create(
-                    recipe=recipe, user=request.user
+                    recipe=recipe, user=self.request.user
                 )
-                serializer = ShortRecipeSerializer(instance.recipe)
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
             except:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
+            context = {'request': self.request}
+            serializer = ShortRecipeSerializer(
+                instance.recipe, context=context
+            )
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         if request.method == 'DELETE':
             try:
                 instance = FavoriteRecipe.objects.get(
-                    recipe=recipe, user=request.user
+                    recipe=recipe, user=self.request.user
                 )
-                instance.delete()
-                return Response(status=status.HTTP_204_NO_CONTENT)
             except:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
+            instance.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
