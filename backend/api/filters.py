@@ -24,15 +24,13 @@ class RecipeFilter(filters.FilterSet):
     )
 
     def get_is_favorited(self, queryset, field_name, value):
-        user = self.request.user
         return queryset.filter(
-            favoriterecipe__user=user
+            favoriterecipe__user=self.request.user
         )
 
     def get_is_in_shopping_cart(self, queryset, field_name, value):
-        user = self.request.user
         return queryset.filter(
-            shoppingcartrecipe__user=user
+            shoppingcartrecipe__user=self.request.user
         )
 
     class Meta:

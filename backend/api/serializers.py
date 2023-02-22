@@ -1,4 +1,5 @@
 import base64
+import uuid
 
 from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
@@ -14,8 +15,12 @@ class Base64ImageField(serializers.ImageField):
     def to_internal_value(self, data):
         if isinstance(data, str) and data.startswith('data:image'):
             format, imgstr = data.split(';base64,')
-            ext = format.split('/')[-1]
-            data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
+            file_name = str(uuid.uuid4())
+            file_extension = format.split('/')[-1]
+            data = ContentFile(
+                base64.b64decode(imgstr),
+                name=file_name + '.' + file_extension
+            )
 
         return super().to_internal_value(data)
 
@@ -115,38 +120,38 @@ class RecipeSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         tags = self.initial_data.get('tags')
         ingredients = self.initial_data.get('ingredients')
-        recipe = super().create(validated_data)
+        instance = super().create(validated_data)
         for tag in tags:
             tag = TagRecipe.objects.create(
-                recipe=recipe,
+                recipe=instance,
                 tag_id=tag,
             )
         for ingredient in ingredients:
             ingredient = IngredientRecipe.objects.create(
-                recipe=recipe,
+                recipe=instance,
                 ingredient_id=ingredient.get('id'),
                 amount=ingredient.get('amount'),
             )
-        return recipe
+        return instance
 
     def update(self, instance, validated_data):
+        TagRecipe.objects.filter(recipe=instance).delete()
+        IngredientRecipe.objects.filter(recipe=instance).delete()
         tags = self.initial_data.get('tags')
         ingredients = self.initial_data.get('ingredients')
-        recipe = super().update(instance, validated_data)
-        TagRecipe.objects.filter(recipe=recipe).delete()
-        IngredientRecipe.objects.filter(recipe=recipe).delete()
+        instance = super().update(instance, validated_data)
         for tag in tags:
             tag = TagRecipe.objects.create(
-                recipe=recipe,
+                recipe=instance,
                 tag_id=tag,
             )
         for ingredient in ingredients:
             ingredient = IngredientRecipe.objects.create(
-                recipe=recipe,
+                recipe=instance,
                 ingredient_id=ingredient.get('id'),
                 amount=ingredient.get('amount'),
             )
-        return recipe
+        return instance
 
     def get_is_in_shopping_cart(self, obj):
         request = self.context.get('request')

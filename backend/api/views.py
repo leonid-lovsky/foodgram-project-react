@@ -84,16 +84,23 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def shopping_cart(self, request, pk=None):
         recipe = get_object_or_404(Recipe, pk=pk)
         if request.method == 'POST':
-            recipe_user = ShoppingCartRecipe.objects.create(
-                recipe=recipe, user=request.user
-            )
-            serializer = ShortRecipeSerializer(recipe_user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            try:
+                instance = ShoppingCartRecipe.objects.create(
+                    recipe=recipe, user=request.user
+                )
+                serializer = ShortRecipeSerializer(instance.recipe)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
         if request.method == 'DELETE':
-            ShoppingCartRecipe.objects.filter(
-                recipe=recipe, user=request.user
-            ).delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            try:
+                instance = ShoppingCartRecipe.objects.get(
+                    recipe=recipe, user=request.user
+                )
+                instance.delete()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
 
     @action(
         detail=True,
@@ -104,16 +111,23 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def favorite(self, request, pk=None):
         recipe = get_object_or_404(Recipe, pk=pk)
         if request.method == 'POST':
-            recipe_user = FavoriteRecipe.objects.create(
-                recipe=recipe, user=request.user
-            )
-            serializer = ShortRecipeSerializer(recipe_user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            try:
+                instance = FavoriteRecipe.objects.create(
+                    recipe=recipe, user=request.user
+                )
+                serializer = ShortRecipeSerializer(instance.recipe)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
         if request.method == 'DELETE':
-            FavoriteRecipe.objects.filter(
-                recipe=recipe, user=request.user
-            ).delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            try:
+                instance = FavoriteRecipe.objects.get(
+                    recipe=recipe, user=request.user
+                )
+                instance.delete()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
 
     @action(
         detail=False,
@@ -121,9 +135,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=[IsAuthenticated]
     )
     def download_shopping_cart(self, request):
-        user = request.user
         shopping_carts = ShoppingCartRecipe.objects.filter(
-            user=user
+            user=request.user
         ).all()
         shopping_list = defaultdict(int)
 
@@ -144,7 +157,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         for key, value in shopping_list.items():
             output += f'* {key[0]} ({key[1]}) — {value}\n'
 
-        file_name = 'shopping_list.txt'
+        file_name = 'shopping_list'
         response = HttpResponse(shopping_list, content_type='text/plain')
         response['Content-Disposition'] = (
             f'attachment; filename="{file_name}.txt"'
