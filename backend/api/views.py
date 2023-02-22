@@ -76,6 +76,41 @@ class RecipeViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user)
 
     @action(
+        detail=False,
+        url_path='download_shopping_cart',
+        permission_classes=[IsAuthenticated]
+    )
+    def download_shopping_cart(self, request):
+        recipes_in_shopping_cart = RecipeInShoppingCart.objects.filter(
+            user=request.user
+        ).all()
+        shopping_list = defaultdict(int)
+
+        for recipe_in_shopping_cart in recipes_in_shopping_cart:
+            ingredients_in_recipe = IngredientInRecipe.objects.filter(
+                recipe=recipe_in_shopping_cart.recipe
+            ).all()
+
+            for ingredient_in_recipe in ingredients_in_recipe:
+                shopping_list[
+                    (
+                        ingredient_in_recipe.ingredient.name,
+                        ingredient_in_recipe.ingredient.measurement_unit,
+                    )
+                ] += ingredient_in_recipe.amount
+
+        output = 'Список покупок:\n'
+        for key, value in shopping_list.items():
+            output += f'* {key[0]} ({key[1]}) — {value}\n'
+
+        file_name = 'shopping_list'
+        response = HttpResponse(shopping_list, content_type='text/plain')
+        response['Content-Disposition'] = (
+            f'attachment; filename="{file_name}.txt"'
+        )
+        return response
+
+    @action(
         detail=True,
         methods=['post', 'delete'],
         url_path='shopping_cart',
@@ -128,41 +163,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 return Response(status=status.HTTP_204_NO_CONTENT)
             except:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    @action(
-        detail=False,
-        url_path='download_shopping_cart',
-        permission_classes=[IsAuthenticated]
-    )
-    def download_shopping_cart(self, request):
-        recipes_in_shopping_cart = RecipeInShoppingCart.objects.filter(
-            user=request.user
-        ).all()
-        shopping_list = defaultdict(int)
-
-        for recipe_in_shopping_cart in recipes_in_shopping_cart:
-            ingredients_in_recipe = IngredientInRecipe.objects.filter(
-                recipe=recipe_in_shopping_cart.recipe
-            ).all()
-
-            for ingredient_in_recipe in ingredients_in_recipe:
-                shopping_list[
-                    (
-                        ingredient_in_recipe.ingredient.name,
-                        ingredient_in_recipe.ingredient.measurement_unit,
-                    )
-                ] += ingredient_in_recipe.amount
-
-        output = 'Список покупок:\n'
-        for key, value in shopping_list.items():
-            output += f'* {key[0]} ({key[1]}) — {value}\n'
-
-        file_name = 'shopping_list'
-        response = HttpResponse(shopping_list, content_type='text/plain')
-        response['Content-Disposition'] = (
-            f'attachment; filename="{file_name}.txt"'
-        )
-        return response
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
