@@ -6,7 +6,10 @@ from django.core.files.base import ContentFile
 from djoser import serializers as djoser_serializers
 from rest_framework import serializers
 
-from recipes.models import *
+from recipes.models import (
+    Subscription, IngredientInRecipe, Tag, Recipe, RecipeTag,
+    RecipeInShoppingCart, FavoriteRecipe, Ingredient,
+)
 
 User = get_user_model()
 
@@ -97,7 +100,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         many=True, read_only=True,
     )
 
-    is_favorited = serializers.SerializerMethodField()
+    is_favorite = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
 
     image = Base64ImageField()
@@ -109,7 +112,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             'tags',
             'author',
             'ingredients',
-            'is_favorited',
+            'is_favorite',
             'is_in_shopping_cart',
             'name',
             'image',
@@ -117,40 +120,45 @@ class RecipeSerializer(serializers.ModelSerializer):
             'cooking_time',
         ]
 
+    @staticmethod
+    def create_recipe_tags(recipe, tags_ids):
+        recipe_tags = [
+            RecipeTag(
+                recipe=recipe,
+                tag_id=tag_id,
+            )
+            for tag_id in tags_ids
+        ]
+        RecipeTag.objects.bulk_create(recipe_tags)
+
+    @staticmethod
+    def create_ingredients_in_recipe(recipe, ingredients_data):
+        ingredients_in_recipe = [
+            IngredientInRecipe(
+                recipe=recipe,
+                ingredient_id=ingredient_data.get('id'),
+                amount=ingredient_data.get('amount'),
+            )
+            for ingredient_data in ingredients_data
+        ]
+        IngredientInRecipe.objects.bulk_create(ingredients_in_recipe)
+
     def create(self, validated_data):
-        tags = self.initial_data.get('tags')
-        ingredients = self.initial_data.get('ingredients')
         instance = super().create(validated_data)
-        for tag in tags:
-            tag = RecipeTag.objects.create(
-                recipe=instance,
-                tag_id=tag,
-            )
-        for ingredient in ingredients:
-            ingredient = IngredientInRecipe.objects.create(
-                recipe=instance,
-                ingredient_id=ingredient.get('id'),
-                amount=ingredient.get('amount'),
-            )
+        tags_ids = self.initial_data.get('tags')
+        ingredients_data = self.initial_data.get('ingredients')
+        self.create_recipe_tags(instance, tags_ids)
+        self.create_ingredients_in_recipe(instance, ingredients_data)
         return instance
 
     def update(self, instance, validated_data):
         RecipeTag.objects.filter(recipe=instance).delete()
         IngredientInRecipe.objects.filter(recipe=instance).delete()
-        tags = self.initial_data.get('tags')
-        ingredients = self.initial_data.get('ingredients')
         instance = super().update(instance, validated_data)
-        for tag in tags:
-            tag = RecipeTag.objects.create(
-                recipe=instance,
-                tag_id=tag,
-            )
-        for ingredient in ingredients:
-            ingredient = IngredientInRecipe.objects.create(
-                recipe=instance,
-                ingredient_id=ingredient.get('id'),
-                amount=ingredient.get('amount'),
-            )
+        tags_ids = self.initial_data.get('tags')
+        ingredients_data = self.initial_data.get('ingredients')
+        self.create_recipe_tags(instance, tags_ids)
+        self.create_ingredients_in_recipe(instance, ingredients_data)
         return instance
 
     def get_is_in_shopping_cart(self, obj):
@@ -215,6 +223,7 @@ class UserWithRecipesSerializer(serializers.ModelSerializer):
             queryset = queryset[:int(limit)]
         return ShortRecipeSerializer(queryset, many=True).data
 
+    # noinspection PyMethodMayBeStatic
     def get_recipes_count(self, obj):
         return Recipe.objects.filter(author=obj).count()
 
