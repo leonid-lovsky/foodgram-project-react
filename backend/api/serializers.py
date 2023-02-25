@@ -7,7 +7,7 @@ from djoser import serializers as djoser_serializers
 from rest_framework import serializers
 
 from recipes.models import (
-    Subscription, IngredientInRecipe, Tag, Recipe, RecipeTag,
+    Subscription, IngredientInRecipe, Tag, Recipe, TagRecipe,
     RecipeInShoppingCart, FavoriteRecipe, Ingredient,
 )
 
@@ -123,13 +123,13 @@ class RecipeSerializer(serializers.ModelSerializer):
     @staticmethod
     def create_recipe_tags(recipe, tags_ids):
         recipe_tags = [
-            RecipeTag(
+            TagRecipe(
                 recipe=recipe,
                 tag_id=tag_id,
             )
             for tag_id in tags_ids
         ]
-        RecipeTag.objects.bulk_create(recipe_tags)
+        TagRecipe.objects.bulk_create(recipe_tags)
 
     @staticmethod
     def create_ingredients_in_recipe(recipe, ingredients_data):
@@ -152,7 +152,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         return instance
 
     def update(self, instance, validated_data):
-        RecipeTag.objects.filter(recipe=instance).delete()
+        TagRecipe.objects.filter(recipe=instance).delete()
         IngredientInRecipe.objects.filter(recipe=instance).delete()
         instance = super().update(instance, validated_data)
         tags_ids = self.initial_data.get('tags')

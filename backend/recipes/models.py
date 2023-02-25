@@ -51,7 +51,7 @@ class Ingredient(models.Model):
     class Meta:
         verbose_name = _('Ингредиент')
         verbose_name_plural = _('Ингредиенты')
-        ordering = ['name']
+        ordering = ['name', 'measurement_unit']
         constraints = [
             models.UniqueConstraint(
                 fields=['name', 'measurement_unit'],
@@ -88,7 +88,7 @@ class Recipe(models.Model):
     )
     tags = models.ManyToManyField(
         Tag,
-        through='RecipeTag',
+        through='TagRecipe',
         verbose_name=_('Теги'),
     )
     cooking_time = models.IntegerField(
@@ -111,38 +111,39 @@ class Recipe(models.Model):
         return f'{self.name}'
 
 
-class RecipeTag(models.Model):
-    recipe = models.ForeignKey(
-        Recipe,
-        on_delete=models.CASCADE,
-    )
+class TagRecipe(models.Model):
     tag = models.ForeignKey(
         Tag,
         on_delete=models.RESTRICT,
     )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+    )
 
     class Meta:
-        verbose_name = _('Тег')
-        verbose_name_plural = _('Теги')
+        verbose_name = _('Тег рецепта')
+        verbose_name_plural = _('Теги рецептов')
+        ordering = ['tag', 'recipe']
         constraints = [
             models.UniqueConstraint(
-                fields=['recipe', 'tag'],
+                fields=['tag', 'recipe'],
                 name='%(app_label)s_%(class)s_unique_relationships'
             ),
         ]
 
     def __str__(self):
-        return f'{self.tag}'
+        return f'{self.tag} {self.recipe}'
 
 
 class IngredientInRecipe(models.Model):
-    recipe = models.ForeignKey(
-        Recipe,
-        on_delete=models.CASCADE,
-    )
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.RESTRICT,
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
     )
     amount = models.IntegerField(
         _('Количество'),
@@ -152,17 +153,18 @@ class IngredientInRecipe(models.Model):
     )
 
     class Meta:
-        verbose_name = _('Ингредиент')
-        verbose_name_plural = _('Ингредиенты')
+        verbose_name = _('Ингредиент в рецепте')
+        verbose_name_plural = _('Ингредиенты в рецептах')
+        ordering = ['ingredient', 'recipe']
         constraints = [
             models.UniqueConstraint(
-                fields=['recipe', 'ingredient'],
+                fields=['ingredient', 'recipe'],
                 name='%(app_label)s_%(class)s_unique_relationships'
             ),
         ]
 
     def __str__(self):
-        return f'{self.ingredient} {self.amount}'
+        return f'{self.ingredient} {self.recipe} {self.amount}'
 
 
 class RecipeInShoppingCart(models.Model):
@@ -176,8 +178,9 @@ class RecipeInShoppingCart(models.Model):
     )
 
     class Meta:
-        verbose_name = _('Корзина')
-        verbose_name_plural = _('Корзины')
+        verbose_name = _('Рецепт в корзине')
+        verbose_name_plural = _('Рецепты в корзинах')
+        ordering = ['recipe', 'user']
         constraints = [
             models.UniqueConstraint(
                 fields=['recipe', 'user'],
@@ -186,7 +189,7 @@ class RecipeInShoppingCart(models.Model):
         ]
 
     def __str__(self):
-        return f'{self.user}'
+        return f'{self.recipe} {self.user}'
 
 
 class FavoriteRecipe(models.Model):
@@ -200,8 +203,9 @@ class FavoriteRecipe(models.Model):
     )
 
     class Meta:
-        verbose_name = _('Избранное')
-        verbose_name_plural = _('Избранные')
+        verbose_name = _('Избранный рецепт')
+        verbose_name_plural = _('Избранные рецепты')
+        ordering = ['recipe', 'user']
         constraints = [
             models.UniqueConstraint(
                 fields=['recipe', 'user'],
@@ -210,7 +214,7 @@ class FavoriteRecipe(models.Model):
         ]
 
     def __str__(self):
-        return f'{self.user}'
+        return f'{self.recipe} {self.user}'
 
 
 class Subscription(models.Model):
@@ -226,6 +230,9 @@ class Subscription(models.Model):
     )
 
     class Meta:
+        verbose_name = _('Подписка на автора')
+        verbose_name_plural = _('Подписки на авторов')
+        ordering = ['user', 'author']
         constraints = [
             models.UniqueConstraint(
                 fields=['user', 'author'],
@@ -236,3 +243,6 @@ class Subscription(models.Model):
                 check=~models.Q(user=models.F('author')),
             ),
         ]
+
+    def __str__(self):
+        return f'{self.user} {self.author}'

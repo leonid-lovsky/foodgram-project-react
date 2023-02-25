@@ -3,7 +3,7 @@ from django.db.models import Count
 from django.utils.translation import gettext_lazy as _
 
 from recipes.models import (
-    Ingredient, Tag, IngredientInRecipe, RecipeTag,
+    Ingredient, Tag, IngredientInRecipe, TagRecipe,
     RecipeInShoppingCart, FavoriteRecipe, Recipe,
 )
 
@@ -49,7 +49,7 @@ class IngredientInRecipeInline(admin.TabularInline):
 
 
 class RecipeTagInline(admin.TabularInline):
-    model = RecipeTag
+    model = TagRecipe
     extra = 1
 
 
