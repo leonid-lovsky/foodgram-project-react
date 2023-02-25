@@ -10,12 +10,20 @@ from rest_framework.filters import SearchFilter
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
-from recipes.models import *
-
-from .filters import *
-from .pagination import *
-from .permissions import *
-from .serializers import *
+from api.filters import RecipeFilter
+from api.pagination import PageLimitPagination
+from api.permissions import (
+    IsAuthenticated, IsAuthenticatedOrReadOnly,
+    IsAuthorOrReadOnly,
+)
+from api.serializers import (
+    UserWithRecipesSerializer, TagSerializer,
+    RecipeSerializer, ShortRecipeSerializer, IngredientSerializer,
+)
+from recipes.models import (
+    Subscription, Tag, Recipe, RecipeInShoppingCart,
+    IngredientInRecipe, Ingredient, FavoriteRecipe,
+)
 
 User = get_user_model()
 
@@ -39,6 +47,25 @@ class UserViewSet(djoser_views.UserViewSet):
         )
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @staticmethod
+    def create_relation_author_with_user(author, request, model):
+        try:
+            instance = model.objects.create(author=author, user=request.user)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        context = {'request': request}
+        serializer = UserWithRecipesSerializer(instance.author, context=context)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @staticmethod
+    def delete_relation_author_with_user(author, request, model):
+        try:
+            instance = model.objects.get(author=author, user=request.user)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        instance.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
     @action(
         detail=True,
         methods=['post', 'delete'],
@@ -47,27 +74,14 @@ class UserViewSet(djoser_views.UserViewSet):
     )
     def subscribe(self, request, id=None):
         author = get_object_or_404(User, pk=id)
-        context = {'request': request}
         if request.method == 'POST':
-            try:
-                instance = Subscription.objects.create(
-                    author=author, user=self.request.user
-                )
-            except:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-            serializer = UserWithRecipesSerializer(
-                instance.author, context=context
+            self.create_relation_author_with_user(
+                author, self.request, Subscription
             )
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
         if request.method == 'DELETE':
-            try:
-                instance = Subscription.objects.get(
-                    author=author, user=self.request.user
-                )
-            except:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-            instance.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            self.delete_relation_author_with_user(
+                author, self.request, Subscription
+            )
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -125,65 +139,54 @@ class RecipeViewSet(viewsets.ModelViewSet):
         )
         return response
 
+    @staticmethod
+    def create_relation_recipe_with_user(recipe, request, model):
+        try:
+            instance = model.objects.create(recipe=recipe, user=request.user)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        context = {'request': request}
+        serializer = ShortRecipeSerializer(instance.recipe, context=context)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @staticmethod
+    def delete_relation_recipe_with_user(recipe, request, model):
+        try:
+            instance = model.objects.get(recipe=recipe, user=request.user)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        instance.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
     @action(
-        detail=True,
-        methods=['post', 'delete'],
-        url_path='shopping_cart',
+        detail=True, methods=['post', 'delete'], url_path='shopping_cart',
         permission_classes=[IsAuthenticated]
     )
     def shopping_cart(self, request, pk=None):
         recipe = get_object_or_404(Recipe, pk=pk)
         if request.method == 'POST':
-            try:
-                instance = RecipeInShoppingCart.objects.create(
-                    recipe=recipe, user=self.request.user
-                )
-            except:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-            context = {'request': self.request}
-            serializer = ShortRecipeSerializer(
-                instance.recipe, context=context
+            self.create_relation_recipe_with_user(
+                recipe, self.request, RecipeInShoppingCart
             )
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
         if request.method == 'DELETE':
-            try:
-                instance = RecipeInShoppingCart.objects.get(
-                    recipe=recipe, user=self.request.user
-                )
-            except:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-            instance.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            self.delete_relation_recipe_with_user(
+                recipe, self.request, RecipeInShoppingCart
+            )
 
     @action(
-        detail=True,
-        methods=['post', 'delete'],
-        url_path='favorite',
+        detail=True, methods=['post', 'delete'], url_path='favorite',
         permission_classes=[IsAuthenticated]
     )
     def favorite(self, request, pk=None):
         recipe = get_object_or_404(Recipe, pk=pk)
         if request.method == 'POST':
-            try:
-                instance = FavoriteRecipe.objects.create(
-                    recipe=recipe, user=self.request.user
-                )
-            except:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-            context = {'request': self.request}
-            serializer = ShortRecipeSerializer(
-                instance.recipe, context=context
+            self.create_relation_recipe_with_user(
+                recipe, self.request.user, FavoriteRecipe
             )
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
         if request.method == 'DELETE':
-            try:
-                instance = FavoriteRecipe.objects.get(
-                    recipe=recipe, user=self.request.user
-                )
-            except:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-            instance.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            self.delete_relation_recipe_with_user(
+                recipe, self.request.user, FavoriteRecipe
+            )
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
