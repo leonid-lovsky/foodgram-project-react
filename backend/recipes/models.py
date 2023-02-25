@@ -1,5 +1,8 @@
 from django.conf import settings
-from django.core.validators import MinValueValidator, RegexValidator
+from django.core.validators import (
+    MinValueValidator, RegexValidator,
+    MaxValueValidator,
+)
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -91,10 +94,11 @@ class Recipe(models.Model):
         through='TagRecipe',
         verbose_name=_('Теги'),
     )
-    cooking_time = models.IntegerField(
+    cooking_time = models.PositiveIntegerField(
         _('Время приготовления'),
         validators=[
             MinValueValidator(1),
+            MaxValueValidator(1440)
         ],
     )
     pub_date = models.DateTimeField(
@@ -145,10 +149,11 @@ class IngredientInRecipe(models.Model):
         Recipe,
         on_delete=models.CASCADE,
     )
-    amount = models.IntegerField(
+    amount = models.PositiveIntegerField(
         _('Количество'),
         validators=[
             MinValueValidator(1),
+            MaxValueValidator(1000),
         ],
     )
 
@@ -232,7 +237,7 @@ class Subscription(models.Model):
     class Meta:
         verbose_name = _('Подписка на автора')
         verbose_name_plural = _('Подписки на авторов')
-        ordering = ['user', 'author']
+        ordering = ['-author_id']
         constraints = [
             models.UniqueConstraint(
                 fields=['user', 'author'],
