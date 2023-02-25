@@ -2,7 +2,10 @@ from django.contrib import admin
 from django.db.models import Count
 from django.utils.translation import gettext_lazy as _
 
-from recipes.models import *
+from recipes.models import (
+    Ingredient, Tag, IngredientInRecipe, TagRecipe,
+    RecipeInShoppingCart, FavoriteRecipe, Recipe,
+)
 
 
 @admin.register(Ingredient)
@@ -42,10 +45,11 @@ class TagAdmin(admin.ModelAdmin):
 class IngredientInRecipeInline(admin.TabularInline):
     model = IngredientInRecipe
     extra = 1
+    min_num = 1
 
 
 class RecipeTagInline(admin.TabularInline):
-    model = RecipeTag
+    model = TagRecipe
     extra = 1
 
 
