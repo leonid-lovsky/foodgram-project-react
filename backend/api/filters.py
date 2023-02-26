@@ -12,12 +12,6 @@ class RecipeFilter(filters.FilterSet):
         queryset=User.objects.all(),
         label=_('Автор'),
     )
-    tags = filters.ModelMultipleChoiceFilter(
-        queryset=Tag.objects.all(),
-        label=_('Теги'),
-        field_name='tags__slug',
-        to_field_name='slug'
-    )
     is_favorited = filters.BooleanFilter(
         label=_('В избранном'),
         field_name='is_favorited',
@@ -28,14 +22,20 @@ class RecipeFilter(filters.FilterSet):
         field_name='is_in_shopping_cart',
         method='filter_is_in_shopping_cart'
     )
+    tags = filters.ModelMultipleChoiceFilter(
+        queryset=Tag.objects.all(),
+        label=_('Теги'),
+        field_name='tags__slug',
+        to_field_name='slug'
+    )
 
     class Meta:
         model = Recipe
         fields = [
             'author',
-            'tags',
             'is_favorited',
             'is_in_shopping_cart',
+            'tags',
         ]
 
     def filter_is_favorited(self, queryset, field_name, value):
