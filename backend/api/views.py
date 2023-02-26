@@ -127,13 +127,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
                         ingredient_in_recipe.ingredient.measurement_unit,
                     )
                 ] += ingredient_in_recipe.amount
-
+  
         output = 'Список покупок:\n'
         for key, value in shopping_list.items():
-            output += f'* {key[0]} ({key[1]}) — {value}\n'
+            output += f'{key[0]} ({key[1]}) — {value}\n'
 
-        file_name = 'shopping_list'
-        response = HttpResponse(shopping_list, content_type='text/plain')
+        file_name = 'shopping_cart'
+        response = HttpResponse(output, content_type='text/plain')
         response['Content-Disposition'] = (
             f'attachment; filename="{file_name}.txt"'
         )

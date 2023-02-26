@@ -25,7 +25,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
-    # 'corsheaders',
+    'corsheaders',
     'django_filters',
     'crispy_forms',
 ]
@@ -33,7 +33,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    # 'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -132,11 +132,11 @@ DJOSER = {
     'HIDE_USERS': False,
 }
 
-# CORS_ALLOWED_ORIGINS = [
-#     'http://localhost:8080',
-# ]
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost',
+]
 
-# CORS_URLS_REGEX = r'^/api/.*$'
+CORS_URLS_REGEX = r'^/api/.*$'
 # CORS_ALLOW_CREDENTIALS = True
 
 # LOGIN_REDIRECT_URL = '/accounts/profile/'

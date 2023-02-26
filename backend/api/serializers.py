@@ -57,9 +57,10 @@ class UserSerializer(djoser_serializers.UserSerializer):
 
     def get_is_subscribed(self, obj):
         request = self.context.get('request')
-        if request.user and request.user.is_authenticated:
+        user = request.user
+        if user and user.is_authenticated:
             return Subscription.objects.filter(
-                user=request.user, author=obj
+                user=user, author=obj
             ).exists()
         return False
 
@@ -100,7 +101,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         many=True, read_only=True,
     )
 
-    is_favorite = serializers.SerializerMethodField()
+    is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
 
     image = Base64ImageField()
@@ -112,7 +113,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             'tags',
             'author',
             'ingredients',
-            'is_favorite',
+            'is_favorited',
             'is_in_shopping_cart',
             'name',
             'image',
@@ -163,17 +164,19 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def get_is_in_shopping_cart(self, obj):
         request = self.context.get('request')
-        if request.user and request.user.is_authenticated:
+        user = request.user
+        if user and user.is_authenticated:
             return RecipeInShoppingCart.objects.filter(
-                recipe=obj, user=request.user
+                recipe=obj, user=user
             ).exists()
         return False
 
     def get_is_favorited(self, obj):
         request = self.context.get('request')
-        if request.user and request.user.is_authenticated:
+        user = request.user
+        if user and user.is_authenticated:
             return FavoriteRecipe.objects.filter(
-                recipe=obj, user=request.user
+                recipe=obj, user=user
             ).exists()
         return False
 
@@ -209,9 +212,10 @@ class UserWithRecipesSerializer(serializers.ModelSerializer):
 
     def get_is_subscribed(self, obj):
         request = self.context.get('request')
-        if request.user and request.user.is_authenticated:
+        user = request.user
+        if user and user.is_authenticated:
             return Subscription.objects.filter(
-                user=request.user, author=obj
+                user=user, author=obj
             ).exists()
         return False
 
