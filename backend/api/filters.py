@@ -1,8 +1,8 @@
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 from django_filters import rest_framework as filters
-
-from recipes.models import Tag, Recipe
+from recipes.models import Recipe, Tag
+from rest_framework.filters import SearchFilter
 
 User = get_user_model()
 
@@ -57,3 +57,7 @@ class RecipeFilter(filters.FilterSet):
         if value == False:
             return queryset.excluse(recipeinshoppingcart__user=user)
         return queryset
+
+
+class IngredientFilter(SearchFilter):
+    search_param = 'name'

@@ -4,12 +4,11 @@ import uuid
 from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
 from djoser import serializers as djoser_serializers
-from rest_framework import serializers
-
 from recipes.models import (
-    Subscription, IngredientInRecipe, Tag, Recipe, TagRecipe,
-    RecipeInShoppingCart, FavoriteRecipe, Ingredient,
+    FavoriteRecipe, Ingredient, IngredientInRecipe, Recipe,
+    RecipeInShoppingCart, Subscription, Tag, TagRecipe
 )
+from rest_framework import serializers
 
 User = get_user_model()
 

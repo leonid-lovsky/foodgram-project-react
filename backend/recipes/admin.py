@@ -1,10 +1,9 @@
 from django.contrib import admin
 from django.db.models import Count
 from django.utils.translation import gettext_lazy as _
-
 from recipes.models import (
-    Ingredient, Tag, IngredientInRecipe, TagRecipe,
-    RecipeInShoppingCart, FavoriteRecipe, Recipe,
+    FavoriteRecipe, Ingredient, IngredientInRecipe, Recipe,
+    RecipeInShoppingCart, Tag, TagRecipe
 )
 
 

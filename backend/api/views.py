@@ -1,29 +1,26 @@
 from collections import defaultdict
 
+from api.filters import IngredientFilter, RecipeFilter
+from api.pagination import PageLimitPagination
+from api.permissions import (
+    IsAuthenticated, IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly
+)
+from api.serializers import (
+    IngredientSerializer, RecipeSerializer, ShortRecipeSerializer,
+    TagSerializer, UserWithRecipesSerializer
+)
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser import views as djoser_views
+from recipes.models import (
+    FavoriteRecipe, Ingredient, IngredientInRecipe, Recipe,
+    RecipeInShoppingCart, Subscription, Tag
+)
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
-from rest_framework.filters import SearchFilter
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
-
-from api.filters import RecipeFilter
-from api.pagination import PageLimitPagination
-from api.permissions import (
-    IsAuthenticated, IsAuthenticatedOrReadOnly,
-    IsAuthorOrReadOnly,
-)
-from api.serializers import (
-    UserWithRecipesSerializer, TagSerializer,
-    RecipeSerializer, ShortRecipeSerializer, IngredientSerializer,
-)
-from recipes.models import (
-    Subscription, Tag, Recipe, RecipeInShoppingCart,
-    IngredientInRecipe, Ingredient, FavoriteRecipe,
-)
 
 User = get_user_model()
 
@@ -129,11 +126,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
                     )
                 ] += ingredient_in_recipe.amount
 
-        output = 'Список покупок:\n'
+        output = ''
         for key, value in shopping_list.items():
             output += f'{key[0]} ({key[1]}) — {value}\n'
 
-        file_name = 'shopping_cart'
+        file_name = 'foodgram_shopping_cart'
         response = HttpResponse(output, content_type='text/plain')
         response['Content-Disposition'] = (
             f'attachment; filename="{file_name}.txt"'
@@ -193,5 +190,5 @@ class RecipeViewSet(viewsets.ModelViewSet):
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
-    filter_backends = [SearchFilter]
-    search_fields = ['name']
+    filter_backends = [IngredientFilter]
+    search_fields = ['^name']
