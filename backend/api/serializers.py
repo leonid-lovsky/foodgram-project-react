@@ -58,11 +58,10 @@ class UserSerializer(djoser_serializers.UserSerializer):
     def get_is_subscribed(self, obj):
         request = self.context.get('request')
         user = request.user
-        if user and user.is_authenticated:
-            return Subscription.objects.filter(
-                user=user, author=obj
-            ).exists()
-        return False
+        if user and user.is_anonymous:
+            return False
+        queryset = Subscription.objects.all()
+        return queryset.filter(user=user, author=obj).exists()
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -165,20 +164,18 @@ class RecipeSerializer(serializers.ModelSerializer):
     def get_is_in_shopping_cart(self, obj):
         request = self.context.get('request')
         user = request.user
-        if user and user.is_authenticated:
-            return RecipeInShoppingCart.objects.filter(
-                recipe=obj, user=user
-            ).exists()
-        return False
+        if user and user.is_anonymous:
+            return False
+        queryset = RecipeInShoppingCart.objects.all()
+        return queryset.filter(recipe=obj, user=user).exists()
 
     def get_is_favorited(self, obj):
         request = self.context.get('request')
         user = request.user
-        if user and user.is_authenticated:
-            return FavoriteRecipe.objects.filter(
-                recipe=obj, user=user
-            ).exists()
-        return False
+        if user and user.is_anonymous:
+            return False
+        queryset = FavoriteRecipe.objects.all()
+        return queryset.filter(recipe=obj, user=user).exists()
 
 
 class ShortRecipeSerializer(serializers.ModelSerializer):
@@ -213,11 +210,9 @@ class UserWithRecipesSerializer(serializers.ModelSerializer):
     def get_is_subscribed(self, obj):
         request = self.context.get('request')
         user = request.user
-        if user and user.is_authenticated:
-            return Subscription.objects.filter(
-                user=user, author=obj
-            ).exists()
-        return False
+        if user and user.is_anonymous:
+            return False
+        return Subscription.objects.filter(user=user, author=obj).exists()
 
     def get_recipes(self, obj):
         request = self.context.get('request')
