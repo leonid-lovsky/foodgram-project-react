@@ -40,7 +40,7 @@ class RecipeFilter(filters.FilterSet):
 
     def filter_is_favorited(self, queryset, field_name, value):
         user = self.request.user
-        if user and user.is_anonymous:
+        if not user or user.is_anonymous:
             return queryset
         if value == True:
             return queryset.filter(favoriterecipe__user=user)
@@ -50,7 +50,7 @@ class RecipeFilter(filters.FilterSet):
 
     def filter_is_in_shopping_cart(self, queryset, field_name, value):
         user = self.request.user
-        if user and user.is_anonymous:
+        if not user or user.is_anonymous:
             return queryset
         if value == True:
             return queryset.filter(recipeinshoppingcart__user=user)

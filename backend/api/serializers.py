@@ -58,7 +58,7 @@ class UserSerializer(djoser_serializers.UserSerializer):
     def get_is_subscribed(self, obj):
         request = self.context.get('request')
         user = request.user
-        if user and user.is_anonymous:
+        if not user or user.is_anonymous:
             return False
         queryset = Subscription.objects.all()
         return queryset.filter(user=user, author=obj).exists()
@@ -164,7 +164,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     def get_is_in_shopping_cart(self, obj):
         request = self.context.get('request')
         user = request.user
-        if user and user.is_anonymous:
+        if not user or user.is_anonymous:
             return False
         queryset = RecipeInShoppingCart.objects.all()
         return queryset.filter(recipe=obj, user=user).exists()
@@ -172,7 +172,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     def get_is_favorited(self, obj):
         request = self.context.get('request')
         user = request.user
-        if user and user.is_anonymous:
+        if not user or user.is_anonymous:
             return False
         queryset = FavoriteRecipe.objects.all()
         return queryset.filter(recipe=obj, user=user).exists()
@@ -210,9 +210,10 @@ class UserWithRecipesSerializer(serializers.ModelSerializer):
     def get_is_subscribed(self, obj):
         request = self.context.get('request')
         user = request.user
-        if user and user.is_anonymous:
+        if not user or user.is_anonymous:
             return False
-        return Subscription.objects.filter(user=user, author=obj).exists()
+        queryset = Subscription.objects.all()
+        return queryset.filter(user=user, author=obj).exists()
 
     def get_recipes(self, obj):
         request = self.context.get('request')
