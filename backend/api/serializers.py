@@ -96,7 +96,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True, read_only=True)
     author = UserSerializer(read_only=True)
     ingredients = IngredientInRecipeSerializer(
-        source='ingredientrecipe_set',
+        source='ingredientinrecipe_set',
         many=True, read_only=True,
     )
 

@@ -39,7 +39,7 @@ class UserViewSet(djoser_views.UserViewSet):
     )
     def subscriptions(self, request):
         subscriptions = User.objects.filter(
-            subscribers__user=self.request.user
+            subscribers__user=request.user
         )
         context = {'request': request}
         serializer = UserWithRecipesSerializer(
@@ -48,19 +48,20 @@ class UserViewSet(djoser_views.UserViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @staticmethod
-    def create_relation_author_with_user(author, request, model):
+    def create_relation_author_with_user(model, author, user, request):
         try:
-            instance = model.objects.create(author=author, user=request.user)
+            instance = model.objects.create(author=author, user=user)
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         context = {'request': request}
-        serializer = UserWithRecipesSerializer(instance.author, context=context)
+        serializer = UserWithRecipesSerializer(
+            instance.author, context=context)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @staticmethod
-    def delete_relation_author_with_user(author, request, model):
+    def delete_relation_author_with_user(model, author, user, request):
         try:
-            instance = model.objects.get(author=author, user=request.user)
+            instance = model.objects.get(author=author, user=user)
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         instance.delete()
@@ -75,12 +76,12 @@ class UserViewSet(djoser_views.UserViewSet):
     def subscribe(self, request, id=None):
         author = get_object_or_404(User, pk=id)
         if request.method == 'POST':
-            self.create_relation_author_with_user(
-                author, self.request, Subscription
+            return self.create_relation_author_with_user(
+                Subscription, author, request.user, request,
             )
         if request.method == 'DELETE':
-            self.delete_relation_author_with_user(
-                author, self.request, Subscription
+            return self.delete_relation_author_with_user(
+                Subscription, author, request.user, request,
             )
 
 
@@ -111,7 +112,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def download_shopping_cart(self, request):
         recipes_in_shopping_cart = RecipeInShoppingCart.objects.filter(
-            user=self.request.user
+            user=request.user
         ).all()
         shopping_list = defaultdict(int)
 
@@ -127,7 +128,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                         ingredient_in_recipe.ingredient.measurement_unit,
                     )
                 ] += ingredient_in_recipe.amount
-  
+
         output = 'Список покупок:\n'
         for key, value in shopping_list.items():
             output += f'{key[0]} ({key[1]}) — {value}\n'
@@ -140,9 +141,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return response
 
     @staticmethod
-    def create_relation_recipe_with_user(recipe, request, model):
+    def create_relation_recipe_with_user(model, recipe, user, request):
         try:
-            instance = model.objects.create(recipe=recipe, user=request.user)
+            instance = model.objects.create(recipe=recipe, user=user)
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         context = {'request': request}
@@ -150,9 +151,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @staticmethod
-    def delete_relation_recipe_with_user(recipe, request, model):
+    def delete_relation_recipe_with_user(model, recipe, user, request):
         try:
-            instance = model.objects.get(recipe=recipe, user=request.user)
+            instance = model.objects.get(recipe=recipe, user=user)
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         instance.delete()
@@ -165,12 +166,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def shopping_cart(self, request, pk=None):
         recipe = get_object_or_404(Recipe, pk=pk)
         if request.method == 'POST':
-            self.create_relation_recipe_with_user(
-                recipe, self.request, RecipeInShoppingCart
+            return self.create_relation_recipe_with_user(
+                RecipeInShoppingCart, recipe, request.user, request
             )
         if request.method == 'DELETE':
-            self.delete_relation_recipe_with_user(
-                recipe, self.request, RecipeInShoppingCart
+            return self.delete_relation_recipe_with_user(
+                RecipeInShoppingCart, recipe, request.user, request
             )
 
     @action(
@@ -180,12 +181,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def favorite(self, request, pk=None):
         recipe = get_object_or_404(Recipe, pk=pk)
         if request.method == 'POST':
-            self.create_relation_recipe_with_user(
-                recipe, self.request.user, FavoriteRecipe
+            return self.create_relation_recipe_with_user(
+                FavoriteRecipe, recipe, request.user, request
             )
         if request.method == 'DELETE':
-            self.delete_relation_recipe_with_user(
-                recipe, self.request.user, FavoriteRecipe
+            return self.delete_relation_recipe_with_user(
+                FavoriteRecipe, recipe, request.user, request
             )
 
 
