@@ -38,11 +38,12 @@ class UserViewSet(djoser_views.UserViewSet):
         subscriptions = User.objects.filter(
             subscribers__user=request.user
         )
+        pages = self.paginate_queryset(subscriptions)
         context = {'request': request}
         serializer = UserWithRecipesSerializer(
-            subscriptions, many=True, context=context
+            pages, many=True, context=context
         )
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return self.get_paginated_response(serializer.data)
 
     @staticmethod
     def create_relation_author_with_user(model, author, user, request):
@@ -52,7 +53,8 @@ class UserViewSet(djoser_views.UserViewSet):
             return Response(status=status.HTTP_400_BAD_REQUEST)
         context = {'request': request}
         serializer = UserWithRecipesSerializer(
-            instance.author, context=context)
+            instance.author, context=context
+        )
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @staticmethod
