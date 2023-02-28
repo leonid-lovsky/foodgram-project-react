@@ -74,17 +74,18 @@ class RecipeAdmin(admin.ModelAdmin):
     ]
 
     search_fields = [
-        'author',
         'name',
+        'author__username',
+        'author__first_name',
+        'author__last_name',
+        'author__email',
     ]
-
-    list_filter = ['tags']
 
     inlines = [
         RecipeIngredientInline,
         RecipeTagInline,
         RecipeInShoppingCartInline,
-        FavoriteRecipeInline
+        FavoriteRecipeInline,
     ]
 
     def get_queryset(self, *args, **kwargs):
