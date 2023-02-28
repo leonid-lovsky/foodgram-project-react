@@ -1,17 +1,18 @@
+import os
 from pathlib import Path
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# TODO
-SECRET_KEY = 'django-insecure-@sqk$b&6+$w67#iaa$8a+76zf=z=xc---739#d54ws5=q=a&t='
+SECRET_KEY = os.getenv('SECRET_KEY')
 
-# TODO
-DEBUG = True
+DEBUG = os.getenv('DEBUG') == 'TRUE'
 
-# TODO
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split()
 
-# TODO
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -43,7 +44,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'foodgram.urls'
 
-# TODO
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -62,11 +62,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'foodgram.wsgi.application'
 
-# TODO
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': os.environ.get('DB_ENGINE') or 'django.db.backends.sqlite3',
+        'NAME': os.environ.get('DB_NAME') or BASE_DIR / 'db.sqlite3',
+        'USER': os.environ.get('POSTGRES_USER'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+        'HOST': os.environ.get('DB_HOST'),
+        'PORT': os.environ.get('DB_PORT'),
     }
 }
 
@@ -133,7 +136,7 @@ DJOSER = {
 }
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost',
+    'http://localhost:8080',
 ]
 
 CORS_URLS_REGEX = r'^/api/.*$'
