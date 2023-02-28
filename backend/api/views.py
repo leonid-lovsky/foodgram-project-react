@@ -14,7 +14,7 @@ from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser import views as djoser_views
 from recipes.models import (
-    FavoriteRecipe, Ingredient, IngredientInRecipe, Recipe,
+    FavoriteRecipe, Ingredient, RecipeIngredient, Recipe,
     RecipeInShoppingCart, Subscription, Tag
 )
 from rest_framework import status, viewsets
@@ -116,17 +116,17 @@ class RecipeViewSet(viewsets.ModelViewSet):
         shopping_list = defaultdict(int)
 
         for recipe_in_shopping_cart in recipes_in_shopping_cart:
-            ingredients_in_recipe = IngredientInRecipe.objects.filter(
+            recipe_ingredients = RecipeIngredient.objects.filter(
                 recipe=recipe_in_shopping_cart.recipe
             ).all()
 
-            for ingredient_in_recipe in ingredients_in_recipe:
+            for recipe_ingredient in recipe_ingredients:
                 shopping_list[
                     (
-                        ingredient_in_recipe.ingredient.name,
-                        ingredient_in_recipe.ingredient.measurement_unit,
+                        recipe_ingredients.ingredient.name,
+                        recipe_ingredients.ingredient.measurement_unit,
                     )
-                ] += ingredient_in_recipe.amount
+                ] += recipe_ingredients.amount
 
         output = ''
         for key, value in shopping_list.items():

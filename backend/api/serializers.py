@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
 from djoser import serializers as djoser_serializers
 from recipes.models import (
-    FavoriteRecipe, Ingredient, IngredientInRecipe, Recipe,
+    FavoriteRecipe, Ingredient, RecipeIngredient, Recipe,
     RecipeInShoppingCart, Subscription, Tag, TagRecipe
 )
 from rest_framework import serializers
@@ -74,7 +74,7 @@ class TagSerializer(serializers.ModelSerializer):
         ]
 
 
-class IngredientInRecipeSerializer(serializers.ModelSerializer):
+class RecipeIngredientSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField(source='ingredient.id')
     name = serializers.ReadOnlyField(source='ingredient.name')
     measurement_unit = serializers.ReadOnlyField(
@@ -82,7 +82,7 @@ class IngredientInRecipeSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        model = IngredientInRecipe
+        model = RecipeIngredient
         fields = [
             'id',
             'name',
@@ -94,8 +94,8 @@ class IngredientInRecipeSerializer(serializers.ModelSerializer):
 class RecipeSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True, read_only=True)
     author = UserSerializer(read_only=True)
-    ingredients = IngredientInRecipeSerializer(
-        source='ingredientinrecipe_set',
+    ingredients = RecipeIngredientSerializer(
+        source='recipeingredient_set',
         many=True, read_only=True,
     )
 
@@ -133,14 +133,14 @@ class RecipeSerializer(serializers.ModelSerializer):
     @staticmethod
     def create_ingredients_in_recipe(recipe, ingredients_data):
         ingredients_in_recipe = [
-            IngredientInRecipe(
+            RecipeIngredient(
                 recipe=recipe,
                 ingredient_id=ingredient_data.get('id'),
                 amount=ingredient_data.get('amount'),
             )
             for ingredient_data in ingredients_data
         ]
-        IngredientInRecipe.objects.bulk_create(ingredients_in_recipe)
+        RecipeIngredient.objects.bulk_create(ingredients_in_recipe)
 
     def create(self, validated_data):
         instance = super().create(validated_data)
@@ -152,7 +152,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         TagRecipe.objects.filter(recipe=instance).delete()
-        IngredientInRecipe.objects.filter(recipe=instance).delete()
+        RecipeIngredient.objects.filter(recipe=instance).delete()
         instance = super().update(instance, validated_data)
         tags_ids = self.initial_data.get('tags')
         ingredients_data = self.initial_data.get('ingredients')

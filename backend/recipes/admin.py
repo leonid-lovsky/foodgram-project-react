@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.db.models import Count
 from django.utils.translation import gettext_lazy as _
 from recipes.models import (
-    FavoriteRecipe, Ingredient, IngredientInRecipe, Recipe,
+    FavoriteRecipe, Ingredient, RecipeIngredient, Recipe,
     RecipeInShoppingCart, Tag, TagRecipe
 )
 
@@ -41,8 +41,8 @@ class TagAdmin(admin.ModelAdmin):
     usage_count.admin_order_field = 'usage_count'
 
 
-class IngredientInRecipeInline(admin.TabularInline):
-    model = IngredientInRecipe
+class RecipeIngredientInline(admin.TabularInline):
+    model = RecipeIngredient
     extra = 1
     min_num = 1
 
@@ -69,8 +69,8 @@ class RecipeAdmin(admin.ModelAdmin):
         'author',
         'cooking_time',
         'ingredient_count',
-        'shopping_cart_count',
         'favorite_count',
+        'shopping_cart_count',
     ]
 
     search_fields = [
@@ -81,7 +81,7 @@ class RecipeAdmin(admin.ModelAdmin):
     list_filter = ['tags']
 
     inlines = [
-        IngredientInRecipeInline,
+        RecipeIngredientInline,
         RecipeTagInline,
         RecipeInShoppingCartInline,
         FavoriteRecipeInline
@@ -91,7 +91,7 @@ class RecipeAdmin(admin.ModelAdmin):
         return (
             super().get_queryset(*args, **kwargs)
             .annotate(
-                ingredient_count=Count('ingredientinrecipe')
+                ingredient_count=Count('recipeingredient')
             )
             .annotate(
                 shopping_cart_count=Count('recipeinshoppingcart')

@@ -85,7 +85,7 @@ class Recipe(models.Model):
     )
     ingredients = models.ManyToManyField(
         Ingredient,
-        through='IngredientInRecipe',
+        through='RecipeIngredient',
         verbose_name=_('Ингредиенты'),
     )
     tags = models.ManyToManyField(
@@ -126,7 +126,7 @@ class TagRecipe(models.Model):
 
     class Meta:
         verbose_name = _('Тег рецепта')
-        verbose_name_plural = _('Теги рецептов')
+        verbose_name_plural = _('Теги рецепта')
         ordering = ['tag', 'recipe']
         constraints = [
             models.UniqueConstraint(
@@ -139,7 +139,7 @@ class TagRecipe(models.Model):
         return f'{self.tag} {self.recipe}'
 
 
-class IngredientInRecipe(models.Model):
+class RecipeIngredient(models.Model):
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.RESTRICT,
@@ -157,8 +157,8 @@ class IngredientInRecipe(models.Model):
     )
 
     class Meta:
-        verbose_name = _('Ингредиент в рецепте')
-        verbose_name_plural = _('Ингредиенты в рецептах')
+        verbose_name = _('Ингредиент рецепта')
+        verbose_name_plural = _('Ингредиенты рецепта')
         ordering = ['ingredient', 'recipe']
         constraints = [
             models.UniqueConstraint(
@@ -183,7 +183,7 @@ class RecipeInShoppingCart(models.Model):
 
     class Meta:
         verbose_name = _('Рецепт в корзине')
-        verbose_name_plural = _('Рецепты в корзинах')
+        verbose_name_plural = _('Рецепт в корзинах')
         ordering = ['recipe', 'user']
         constraints = [
             models.UniqueConstraint(
@@ -207,8 +207,8 @@ class FavoriteRecipe(models.Model):
     )
 
     class Meta:
-        verbose_name = _('Избранный рецепт')
-        verbose_name_plural = _('Избранные рецепты')
+        verbose_name = _('Рецепт в избранном')
+        verbose_name_plural = _('Рецепт в избранном')
         ordering = ['recipe', 'user']
         constraints = [
             models.UniqueConstraint(
