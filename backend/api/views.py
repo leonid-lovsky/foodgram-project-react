@@ -1,29 +1,26 @@
 from collections import defaultdict
 
+from api.filters import IngredientFilter, RecipeFilter
+from api.pagination import PageLimitPagination
+from api.permissions import (
+    IsAuthenticated, IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly
+)
+from api.serializers import (
+    IngredientSerializer, RecipeSerializer, ShortRecipeSerializer,
+    TagSerializer, UserWithRecipesSerializer
+)
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser import views as djoser_views
+from recipes.models import (
+    FavoriteRecipe, Ingredient, RecipeIngredient, Recipe,
+    RecipeInShoppingCart, Subscription, Tag
+)
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
-from rest_framework.filters import SearchFilter
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
-
-from api.filters import RecipeFilter
-from api.pagination import PageLimitPagination
-from api.permissions import (
-    IsAuthenticated, IsAuthenticatedOrReadOnly,
-    IsAuthorOrReadOnly,
-)
-from api.serializers import (
-    UserWithRecipesSerializer, TagSerializer,
-    RecipeSerializer, ShortRecipeSerializer, IngredientSerializer,
-)
-from recipes.models import (
-    Subscription, Tag, Recipe, RecipeInShoppingCart,
-    IngredientInRecipe, Ingredient, FavoriteRecipe,
-)
 
 User = get_user_model()
 
@@ -39,28 +36,31 @@ class UserViewSet(djoser_views.UserViewSet):
     )
     def subscriptions(self, request):
         subscriptions = User.objects.filter(
-            subscribers__user=self.request.user
+            subscribers__user=request.user
         )
+        pages = self.paginate_queryset(subscriptions)
         context = {'request': request}
         serializer = UserWithRecipesSerializer(
-            subscriptions, many=True, context=context
+            pages, many=True, context=context
         )
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return self.get_paginated_response(serializer.data)
 
     @staticmethod
-    def create_relation_author_with_user(author, request, model):
+    def create_relation_author_with_user(model, author, user, request):
         try:
-            instance = model.objects.create(author=author, user=request.user)
+            instance = model.objects.create(author=author, user=user)
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         context = {'request': request}
-        serializer = UserWithRecipesSerializer(instance.author, context=context)
+        serializer = UserWithRecipesSerializer(
+            instance.author, context=context
+        )
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @staticmethod
-    def delete_relation_author_with_user(author, request, model):
+    def delete_relation_author_with_user(model, author, user, request):
         try:
-            instance = model.objects.get(author=author, user=request.user)
+            instance = model.objects.get(author=author, user=user)
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         instance.delete()
@@ -75,12 +75,12 @@ class UserViewSet(djoser_views.UserViewSet):
     def subscribe(self, request, id=None):
         author = get_object_or_404(User, pk=id)
         if request.method == 'POST':
-            self.create_relation_author_with_user(
-                author, self.request, Subscription
+            return self.create_relation_author_with_user(
+                Subscription, author, request.user, request,
             )
         if request.method == 'DELETE':
-            self.delete_relation_author_with_user(
-                author, self.request, Subscription
+            return self.delete_relation_author_with_user(
+                Subscription, author, request.user, request,
             )
 
 
@@ -111,38 +111,38 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def download_shopping_cart(self, request):
         recipes_in_shopping_cart = RecipeInShoppingCart.objects.filter(
-            user=self.request.user
+            user=request.user
         ).all()
         shopping_list = defaultdict(int)
 
         for recipe_in_shopping_cart in recipes_in_shopping_cart:
-            ingredients_in_recipe = IngredientInRecipe.objects.filter(
+            recipe_ingredients = RecipeIngredient.objects.filter(
                 recipe=recipe_in_shopping_cart.recipe
             ).all()
 
-            for ingredient_in_recipe in ingredients_in_recipe:
+            for recipe_ingredient in recipe_ingredients:
                 shopping_list[
                     (
-                        ingredient_in_recipe.ingredient.name,
-                        ingredient_in_recipe.ingredient.measurement_unit,
+                        recipe_ingredients.ingredient.name,
+                        recipe_ingredients.ingredient.measurement_unit,
                     )
-                ] += ingredient_in_recipe.amount
+                ] += recipe_ingredients.amount
 
-        output = 'Список покупок:\n'
+        output = ''
         for key, value in shopping_list.items():
-            output += f'* {key[0]} ({key[1]}) — {value}\n'
+            output += f'{key[0]} ({key[1]}) — {value}\n'
 
-        file_name = 'shopping_list'
-        response = HttpResponse(shopping_list, content_type='text/plain')
+        file_name = 'foodgram_shopping_cart'
+        response = HttpResponse(output, content_type='text/plain')
         response['Content-Disposition'] = (
             f'attachment; filename="{file_name}.txt"'
         )
         return response
 
     @staticmethod
-    def create_relation_recipe_with_user(recipe, request, model):
+    def create_relation_recipe_with_user(model, recipe, user, request):
         try:
-            instance = model.objects.create(recipe=recipe, user=request.user)
+            instance = model.objects.create(recipe=recipe, user=user)
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         context = {'request': request}
@@ -150,9 +150,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @staticmethod
-    def delete_relation_recipe_with_user(recipe, request, model):
+    def delete_relation_recipe_with_user(model, recipe, user, request):
         try:
-            instance = model.objects.get(recipe=recipe, user=request.user)
+            instance = model.objects.get(recipe=recipe, user=user)
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         instance.delete()
@@ -165,12 +165,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def shopping_cart(self, request, pk=None):
         recipe = get_object_or_404(Recipe, pk=pk)
         if request.method == 'POST':
-            self.create_relation_recipe_with_user(
-                recipe, self.request, RecipeInShoppingCart
+            return self.create_relation_recipe_with_user(
+                RecipeInShoppingCart, recipe, request.user, request
             )
         if request.method == 'DELETE':
-            self.delete_relation_recipe_with_user(
-                recipe, self.request, RecipeInShoppingCart
+            return self.delete_relation_recipe_with_user(
+                RecipeInShoppingCart, recipe, request.user, request
             )
 
     @action(
@@ -180,17 +180,17 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def favorite(self, request, pk=None):
         recipe = get_object_or_404(Recipe, pk=pk)
         if request.method == 'POST':
-            self.create_relation_recipe_with_user(
-                recipe, self.request.user, FavoriteRecipe
+            return self.create_relation_recipe_with_user(
+                FavoriteRecipe, recipe, request.user, request
             )
         if request.method == 'DELETE':
-            self.delete_relation_recipe_with_user(
-                recipe, self.request.user, FavoriteRecipe
+            return self.delete_relation_recipe_with_user(
+                FavoriteRecipe, recipe, request.user, request
             )
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
-    filter_backends = [SearchFilter]
-    search_fields = ['name']
+    filter_backends = [IngredientFilter]
+    search_fields = ['^name']
