@@ -123,10 +123,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
             for recipe_ingredient in recipe_ingredients:
                 shopping_list[
                     (
-                        recipe_ingredients.ingredient.name,
-                        recipe_ingredients.ingredient.measurement_unit,
+                        recipe_ingredient.ingredient.name,
+                        recipe_ingredient.ingredient.measurement_unit,
                     )
-                ] += recipe_ingredients.amount
+                ] += recipe_ingredient.amount
 
         output = ''
         for key, value in shopping_list.items():
