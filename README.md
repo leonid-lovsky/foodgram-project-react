@@ -1,1 +1,3 @@
-# praktikum_new_diplom
+Адрес сервера: http://62.84.126.94/
+Логин администратора: admin@sample.com 
+Пароль администратора: localhost
