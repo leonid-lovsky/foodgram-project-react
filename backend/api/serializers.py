@@ -152,28 +152,27 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 
 class RecipeIngredientCreateSerializer(serializers.ModelSerializer):
-    id = serializers.ReadOnlyField(source='ingredient.id')
-    name = serializers.ReadOnlyField(source='ingredient.name')
-    measurement_unit = serializers.ReadOnlyField(source='ingredient.measurement_unit')
+    id = serializers.IntegerField(source='ingredient.id')
+    # amount = serializers.IntegerField(source='amount')
 
     class Meta:
         model = RecipeIngredient
         fields = [
             'id',
-            'name',
-            'measurement_unit',
             'amount',
         ]
 
 
 class RecipeCreateSerializer(serializers.ModelSerializer):
     # author = UserSerializer(read_only=True)
-    ingredients = RecipeIngredientSerializer(
+    ingredients = RecipeIngredientCreateSerializer(
         source='recipeingredient_set',
         many=True,
-        read_only=True,
     )
-    tags = TagSerializer(many=True, read_only=True)
+    tags = serializers.PrimaryKeyRelatedField(
+        querysey=Tag.objects.all(),
+        many=True,
+    )
 
     image = Base64ImageField()
 
@@ -192,24 +191,32 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         logging.debug(validated_data)
+
         ingredients_data = validated_data.pop('ingredients')
         logging.debug(ingredients_data)
         tags_data = validated_data.pop('tags')
         logging.debug(tags_data)
+
         instance = super().create(validated_data)
         logging.debug(instance)
-        self.create_related_ingredients(instance, ingredients_data)
-        self.create_related_tags(instance, tags_data)
+
+        # self.create_related_ingredients(instance, ingredients_data)
+        # self.create_related_tags(instance, tags_data)
+
         return instance
 
     def update(self, instance, validated_data):
         RecipeIngredient.objects.filter(recipe=instance).delete()
         TagRecipe.objects.filter(recipe=instance).delete()
+
         ingredients_data = validated_data.pop('ingredients')
         tags_data = validated_data.pop('tags')
+
         instance = super().update(instance, validated_data)
+
         self.create_related_ingredients(instance, ingredients_data)
         self.create_related_tags(instance, tags_data)
+
         return instance
 
     @staticmethod
@@ -222,6 +229,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             )
             for ingredient_data in ingredients_data
         ]
+
         RecipeIngredient.objects.bulk_create(ingredients_in_recipe)
 
     @staticmethod
@@ -233,6 +241,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             )
             for tag_data in tags_data
         ]
+
         TagRecipe.objects.bulk_create(recipe_tags)
 
 
