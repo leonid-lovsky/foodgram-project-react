@@ -1,7 +1,5 @@
 from django.conf import settings
-from django.core.validators import (
-    MaxValueValidator, MinValueValidator, RegexValidator
-)
+from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -57,7 +55,7 @@ class Ingredient(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=['name', 'measurement_unit'],
-                name='%(app_label)s_%(class)s_unique_relationships'
+                name='%(app_label)s_%(class)s_unique_relationships',
             ),
         ]
 
@@ -95,10 +93,7 @@ class Recipe(models.Model):
     )
     cooking_time = models.PositiveIntegerField(
         _('Время приготовления'),
-        validators=[
-            MinValueValidator(1),
-            MaxValueValidator(1440)
-        ],
+        validators=[MinValueValidator(1), MaxValueValidator(1440)],
     )
     pub_date = models.DateTimeField(
         _('Дата публикации'),
@@ -131,7 +126,7 @@ class TagRecipe(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=['tag', 'recipe'],
-                name='%(app_label)s_%(class)s_unique_relationships'
+                name='%(app_label)s_%(class)s_unique_relationships',
             ),
         ]
 
@@ -163,7 +158,7 @@ class RecipeIngredient(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=['ingredient', 'recipe'],
-                name='%(app_label)s_%(class)s_unique_relationships'
+                name='%(app_label)s_%(class)s_unique_relationships',
             ),
         ]
 
@@ -188,7 +183,7 @@ class RecipeInShoppingCart(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=['recipe', 'user'],
-                name='%(app_label)s_%(class)s_unique_relationships'
+                name='%(app_label)s_%(class)s_unique_relationships',
             ),
         ]
 
@@ -213,7 +208,7 @@ class FavoriteRecipe(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=['recipe', 'user'],
-                name='%(app_label)s_%(class)s_unique_relationships'
+                name='%(app_label)s_%(class)s_unique_relationships',
             ),
         ]
 
@@ -240,7 +235,7 @@ class Subscription(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=['user', 'author'],
-                name='%(app_label)s_%(class)s_unique_relationships'
+                name='%(app_label)s_%(class)s_unique_relationships',
             ),
             models.CheckConstraint(
                 name='%(app_label)s_%(class)s_prevent_self_follow',

@@ -152,8 +152,10 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 
 class RecipeIngredientCreateSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(source='ingredient.id')
-    # amount = serializers.IntegerField(source='amount')
+    id = serializers.PrimaryKeyRelatedField(
+        queryset=Ingredient.objects.all(),
+    )
+    # amount = serializers.IntegerField()
 
     class Meta:
         model = RecipeIngredient
@@ -164,13 +166,11 @@ class RecipeIngredientCreateSerializer(serializers.ModelSerializer):
 
 
 class RecipeCreateSerializer(serializers.ModelSerializer):
-    # author = UserSerializer(read_only=True)
     ingredients = RecipeIngredientCreateSerializer(
-        source='recipeingredient_set',
         many=True,
     )
     tags = serializers.PrimaryKeyRelatedField(
-        querysey=Tag.objects.all(),
+        queryset=Tag.objects.all(),
         many=True,
     )
 
@@ -179,8 +179,6 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = [
-            # 'id',
-            # 'author',
             'ingredients',
             'tags',
             'image',
@@ -200,6 +198,13 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         instance = super().create(validated_data)
         logging.debug(instance)
 
+        logging.debug('AAA!!!!!')
+        RecipeIngredient(
+            recipe=instance,
+            ingredient_id=1910,
+            amount=1000,
+        ).save()
+        logging.debug('222!!!!!')
         # self.create_related_ingredients(instance, ingredients_data)
         # self.create_related_tags(instance, tags_data)
 
@@ -219,29 +224,28 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
         return instance
 
-    @staticmethod
-    def create_related_ingredients(recipe, ingredients_data):
-        ingredients_in_recipe = [
-            RecipeIngredient(
+    def create_related_ingredients(self, recipe, ingredients_data):
+        recipe_ingredients = []
+        for ingredient_data in ingredients_data:
+            logging.debug('aaa!')
+            # logging.debug(item['ingredient'])
+            # logging.debug(item['ingredient']['id'])
+            recipe_ingredient = RecipeIngredient(
                 recipe=recipe,
-                ingredient_id=ingredient_data['id'],
-                amount=ingredient_data['amount'],
+                ingredient_id=1915,
+                amount=1000,
             )
-            for ingredient_data in ingredients_data
-        ]
+            recipe_ingredients.append(recipe_ingredient)
+        RecipeIngredient.objects.bulk_create(recipe_ingredients)
 
-        RecipeIngredient.objects.bulk_create(ingredients_in_recipe)
-
-    @staticmethod
-    def create_related_tags(recipe, tags_data):
-        recipe_tags = [
-            TagRecipe(
+    def create_related_tags(self, recipe, tags_data):
+        recipe_tags = []
+        for recipe_data in tags_data:
+            recipe_tag = TagRecipe(
                 recipe=recipe,
-                tag=tag_data,
+                tag=recipe_data,
             )
-            for tag_data in tags_data
-        ]
-
+            recipe_tags.append(recipe_tag)
         TagRecipe.objects.bulk_create(recipe_tags)
 
 
