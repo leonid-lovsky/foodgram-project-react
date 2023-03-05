@@ -13,20 +13,18 @@ class RecipeFilter(filters.FilterSet):
         label=_('Автор'),
     )
     is_favorited = filters.BooleanFilter(
-        label=_('В избранном'),
-        field_name='is_favorited',
-        method='filter_is_favorited'
+        label=_('В избранном'), field_name='is_favorited', method='filter_is_favorited'
     )
     is_in_shopping_cart = filters.BooleanFilter(
         label=_('В корзине'),
         field_name='is_in_shopping_cart',
-        method='filter_is_in_shopping_cart'
+        method='filter_is_in_shopping_cart',
     )
     tags = filters.ModelMultipleChoiceFilter(
         queryset=Tag.objects.all(),
         label=_('Теги'),
         field_name='tags__slug',
-        to_field_name='slug'
+        to_field_name='slug',
     )
 
     class Meta:

@@ -3,19 +3,30 @@ from collections import defaultdict
 from api.filters import IngredientFilter, RecipeFilter
 from api.pagination import PageLimitPagination
 from api.permissions import (
-    IsAuthenticated, IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly
+    IsAuthenticated,
+    IsAuthenticatedOrReadOnly,
+    IsAuthorOrReadOnly,
 )
 from api.serializers import (
-    IngredientSerializer, RecipeSerializer, ShortRecipeSerializer,
-    TagSerializer, UserWithRecipesSerializer
+    IngredientSerializer,
+    RecipeCreateSerializer,
+    RecipeSerializer,
+    ShortRecipeSerializer,
+    TagSerializer,
+    UserWithRecipesSerializer,
 )
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser import views as djoser_views
 from recipes.models import (
-    FavoriteRecipe, Ingredient, RecipeIngredient, Recipe,
-    RecipeInShoppingCart, Subscription, Tag
+    FavoriteRecipe,
+    Ingredient,
+    Recipe,
+    RecipeIngredient,
+    RecipeInShoppingCart,
+    Subscription,
+    Tag,
 )
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -35,14 +46,10 @@ class UserViewSet(djoser_views.UserViewSet):
         permission_classes=[IsAuthenticated],
     )
     def subscriptions(self, request):
-        subscriptions = User.objects.filter(
-            subscribers__user=request.user
-        )
+        subscriptions = User.objects.filter(subscribers__user=request.user)
         pages = self.paginate_queryset(subscriptions)
         context = {'request': request}
-        serializer = UserWithRecipesSerializer(
-            pages, many=True, context=context
-        )
+        serializer = UserWithRecipesSerializer(pages, many=True, context=context)
         return self.get_paginated_response(serializer.data)
 
     @staticmethod
@@ -52,9 +59,7 @@ class UserViewSet(djoser_views.UserViewSet):
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         context = {'request': request}
-        serializer = UserWithRecipesSerializer(
-            instance.author, context=context
-        )
+        serializer = UserWithRecipesSerializer(instance.author, context=context)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @staticmethod
@@ -70,17 +75,23 @@ class UserViewSet(djoser_views.UserViewSet):
         detail=True,
         methods=['post', 'delete'],
         url_path='subscribe',
-        permission_classes=[IsAuthenticated]
+        permission_classes=[IsAuthenticated],
     )
     def subscribe(self, request, id=None):
         author = get_object_or_404(User, pk=id)
         if request.method == 'POST':
             return self.create_relation_author_with_user(
-                Subscription, author, request.user, request,
+                Subscription,
+                author,
+                request.user,
+                request,
             )
         if request.method == 'DELETE':
             return self.delete_relation_author_with_user(
-                Subscription, author, request.user, request,
+                Subscription,
+                author,
+                request.user,
+                request,
             )
 
 
@@ -101,13 +112,22 @@ class RecipeViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_class = RecipeFilter
 
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return RecipeCreateSerializer
+        if self.action == 'update':
+            return RecipeCreateSerializer
+        if self.action == 'partial_update':
+            return RecipeCreateSerializer
+        return super().get_serializer_class()
+
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
     @action(
         detail=False,
         url_path='download_shopping_cart',
-        permission_classes=[IsAuthenticated]
+        permission_classes=[IsAuthenticated],
     )
     def download_shopping_cart(self, request):
         recipes_in_shopping_cart = RecipeInShoppingCart.objects.filter(
@@ -134,9 +154,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         file_name = 'foodgram_shopping_cart'
         response = HttpResponse(output, content_type='text/plain')
-        response['Content-Disposition'] = (
-            f'attachment; filename="{file_name}.txt"'
-        )
+        response['Content-Disposition'] = f'attachment; filename="{file_name}.txt"'
         return response
 
     @staticmethod
@@ -159,8 +177,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
-        detail=True, methods=['post', 'delete'], url_path='shopping_cart',
-        permission_classes=[IsAuthenticated]
+        detail=True,
+        methods=['post', 'delete'],
+        url_path='shopping_cart',
+        permission_classes=[IsAuthenticated],
     )
     def shopping_cart(self, request, pk=None):
         recipe = get_object_or_404(Recipe, pk=pk)
@@ -174,8 +194,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
             )
 
     @action(
-        detail=True, methods=['post', 'delete'], url_path='favorite',
-        permission_classes=[IsAuthenticated]
+        detail=True,
+        methods=['post', 'delete'],
+        url_path='favorite',
+        permission_classes=[IsAuthenticated],
     )
     def favorite(self, request, pk=None):
         recipe = get_object_or_404(Recipe, pk=pk)
